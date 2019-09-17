@@ -16,7 +16,7 @@ function signIn(): Promise<string> {
       path: '/j_spring_security_check',
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json',
+        'Accept': 'application/json',
       },
     };
 

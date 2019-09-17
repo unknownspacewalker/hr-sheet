@@ -23,6 +23,7 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": "error",
     "no-useless-constructor": "off",
     "@typescript-eslint/no-useless-constructor": "error",
+    'quote-props': ['error', 'consistent']
   },
   settings: {
     'import/extensions': [".js", ".ts"],

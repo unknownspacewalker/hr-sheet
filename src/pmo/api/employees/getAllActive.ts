@@ -8,7 +8,7 @@ const url = 'http://internaltools.pmo.aws.griddynamics.net:8080/service/api/empl
 function getAllActive(jsessionid: string) {
   return axios(url, {
     headers: {
-      Cookie: `JSESSIONID=${jsessionid}`,
+      'Cookie': `JSESSIONID=${jsessionid}`,
       'Content-Type': 'application/json',
     },
   });
