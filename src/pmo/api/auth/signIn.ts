@@ -1,13 +1,17 @@
 import cookie from 'cookie';
-
+import dotenv from 'dotenv';
 import qs from 'querystring';
-import * as http from 'http';
+import http from 'http';
+
+dotenv.config();
+
+const { HOST, LOGIN, PASSWORD } = process.env;
 
 function signIn(): Promise<string | Error> {
   return new Promise((resolve, reject) => {
     const options = {
       method: 'POST',
-      hostname: 'internaltools.pmo.aws.griddynamics.net',
+      hostname: HOST,
       port: '8080',
       path: '/j_spring_security_check',
       headers: {
@@ -32,7 +36,7 @@ function signIn(): Promise<string | Error> {
       });
     });
 
-    req.write(qs.stringify({ j_username: 'pmo-bot', j_password: 'pmo-bot' }));
+    req.write(qs.stringify({ j_username: LOGIN, j_password: PASSWORD }));
     req.end();
   });
 }
