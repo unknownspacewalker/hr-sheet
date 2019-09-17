@@ -1,5 +1,5 @@
 import signIn from './pmo/api/auth/signIn';
-import getAllActive from './pmo/api/employees/get-all-active';
+import getAllActive from './pmo/api/employees/getAllActive';
 
 (async () => {
   try {
