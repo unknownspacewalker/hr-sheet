@@ -7,7 +7,7 @@ dotenv.config();
 
 const { HOST, LOGIN, PASSWORD } = process.env;
 
-function signIn(): Promise<string | Error> {
+function signIn(): Promise<string> {
   return new Promise((resolve, reject) => {
     const options = {
       method: 'POST',
@@ -16,7 +16,7 @@ function signIn(): Promise<string | Error> {
       path: '/j_spring_security_check',
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
-        accept: 'application/json',
+        Accept: 'application/json',
       },
     };
 
