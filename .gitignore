@@ -57,6 +57,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# google key json
+google-key.json
+
 # next.js build output
 .next
 
