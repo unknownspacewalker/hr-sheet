@@ -4,4 +4,4 @@ interface ISheetData {
   rows: ISheetRowData[];
 }
 
-export default ISheetRowData;
+export default ISheetData;

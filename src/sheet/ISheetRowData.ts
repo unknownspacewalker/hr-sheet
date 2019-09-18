@@ -1,10 +1,5 @@
 import { EPriority } from "./EPriority";
-
-interface Interview {
-  Date: Date;
-  CandidateFullName: string;
-  toString: () => string;
-}
+import IEvent from "./IEvent";
 
 export default interface ISheetRowData {
   DM: string;
@@ -15,9 +10,9 @@ export default interface ISheetRowData {
   Grade: string;
   English: boolean;
   Priority: EPriority;
-  OnBoarded: Interview;
-  Experience: Interview[];
+  OnBoarded?: IEvent;
+  Experience: IEvent[];
   Total: number;
-  PlannedInterviews: Interview[];
+  PlannedInterviews: IEvent[];
   toString: () => string;
 }

@@ -2,11 +2,11 @@ import { google } from "googleapis";
 import { promises as fsPromises } from "fs";
 
 function fromToken(token: string) {
-  const oAuth2Client = new google.auth.OAuth2();
-
-  oAuth2Client.setCredentials(JSON.parse(token));
-
-  return oAuth2Client;
+  const jwtClient = new google.auth.JWT();
+  jwtClient.fromJSON(JSON.parse(token));
+  return jwtClient.createScoped([
+    "https://www.googleapis.com/auth/spreadsheets"
+  ]);
 }
 
 async function fromFile(tokenPath: string) {
