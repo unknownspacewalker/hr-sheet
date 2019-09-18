@@ -41,8 +41,8 @@ const parsePriority = (priority: string): EPriority => {
   throw new Error(`Undefined priority ${priority}`);
 };
 
-const formatPriority = (proority: number): EViewPriority => {
-  switch (proority) {
+const formatPriority = (priority: number): EViewPriority => {
+  switch (priority) {
     case EPriority.Bench:
       return EViewPriority.Bench;
     case EPriority.InternalProject:
@@ -50,7 +50,7 @@ const formatPriority = (proority: number): EViewPriority => {
     case EPriority.CustomerProject:
       return EViewPriority.CustomerProject;
   }
-  throw new Error(`Undefined priority ${proority}`);
+  throw new Error(`Undefined priority ${priority}`);
 };
 
 const parseEvent = (event: string): IEvent => {
