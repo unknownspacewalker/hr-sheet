@@ -6,5 +6,6 @@ interface IEmployee {
   readonly familyName: string | null;
   readonly track: string | null;
   readonly level: number;
+  readonly location: string | null;
   readonly priority: '1. Bench' | '2. Internal Project' | '3. Billable Project';
 }

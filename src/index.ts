@@ -48,6 +48,7 @@ import getPriority from './pmo/utils/getPriority';
           familyName: employee.general.familyName,
           track: employee.latestGrade.track,
           level: employee.latestGrade.level,
+          location: employee.latestGrade.location,
           priority: getPriority(
             await getEmployeeProjects(employee.general.username, jsessionid, incCounter),
           ),
