@@ -1,4 +1,4 @@
-interface IEmployee {
+interface IGetAllActiveResponseItem {
   readonly id: number;
   general: {
     readonly username: string | null;
@@ -33,5 +33,8 @@ interface IEmployee {
     readonly gitHubContact: string | null;
     readonly dockerCloudId: string | null;
     readonly skypeId: string | null;
-  }
+  },
+  readonly projects: string[]
 }
+
+interface IGetAllActiveResponse extends Array<IGetAllActiveResponseItem> { }
