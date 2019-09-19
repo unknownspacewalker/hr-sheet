@@ -5,10 +5,7 @@ import ISheetRowData from "./ISheetRowData";
 import { EPriority, EViewPriority } from "./EPriority";
 import IEvent from "./IEvent";
 import ISheetData from "./ISheetData";
-
-interface Remote {
-  
-}
+import IEmployee from "../interfaces/IEmployee";
 
 dotenv.config();
 
@@ -77,9 +74,7 @@ const notService = (value: string[]): boolean => value.length >= 10;
 const comparePriorityAsc = (
   firstData: ISheetRowData,
   secondData: ISheetRowData
-): number => {
-  return firstData.Priority - secondData.Priority;
-};
+): number => firstData.Priority - secondData.Priority;
 
 const parseRowData = (data: string[]): ISheetRowData => {
   const [
@@ -149,16 +144,70 @@ const writeSheet = async (data: ISheetData) => {
   });
 };
 
+const concatIfNotNull = (
+  separator: string,
+  ...parts: (string | null | number)[]
+): string => parts.filter(part => part !== null).join(separator);
+
 const fetchSheetData = async (): Promise<ISheetData> => ({
   rows: (await fetchCurrentData()).filter(notService).map(parseRowData)
 });
 
-const createFromRemote()
+const createFromEmployee = (employee: IEmployee): ISheetRowData => ({
+  DM: employee.manager ? employee.manager : "",
+  Availability: "",
+  DeveloperId: employee.id,
+  Developer: concatIfNotNull(" ", employee.firstName, employee.familyName),
+  Location: "",
+  Grade: concatIfNotNull(" ", employee.track, employee.level),
+  English: false,
+  Priority: parsePriority(employee.priority),
+  OnBoarded: null,
+  Experience: [],
+  Total: 0,
+  PlannedInterviews: []
+});
 
-export default async () => {
+const reduceToMapByDeveloperId = (
+  data: ISheetRowData[]
+): Map<number, ISheetRowData> => {
+  return data.reduce(
+    (accumulator: Map<number, ISheetRowData>, value: ISheetRowData) => {
+      return accumulator.set(value.DeveloperId, value);
+    },
+    new Map()
+  );
+};
+
+const populateWithUserInput = (
+  value: ISheetRowData,
+  source: ISheetRowData
+): ISheetRowData => {
+  return {
+    ...value,
+    Availability: source.Availability,
+    English: source.English,
+    OnBoarded: source.OnBoarded,
+    Experience: source.Experience,
+    Total: source.Total,
+    PlannedInterviews: source.PlannedInterviews
+  };
+};
+
+const populateByMap = (
+  sheetDataMap: Map<number, ISheetRowData>
+): ((value: ISheetRowData) => ISheetRowData) => {
+  return (value: ISheetRowData) =>
+    populateWithUserInput(value, sheetDataMap.get(value.DeveloperId));
+};
+
+export default async (employees: IEmployee[]) => {
   const sheetData = await fetchSheetData();
 
-  sheetData.rows.sort(comparePriorityAsc);
-
-  writeSheet(sheetData);
+  writeSheet({
+    rows: employees
+      .map(createFromEmployee)
+      .map(populateByMap(reduceToMapByDeveloperId(sheetData.rows)))
+      .sort(comparePriorityAsc)
+  });
 };

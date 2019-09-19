@@ -1,4 +1,6 @@
-interface IEmployee {
+import { EViewPriority } from '../sheet/EPriority';
+
+export default interface IEmployee {
   readonly id: number;
   readonly manager: string | null;
   readonly username: string | null;
@@ -6,5 +8,5 @@ interface IEmployee {
   readonly familyName: string | null;
   readonly track: string | null;
   readonly level: number;
-  readonly priority: '1. Bench' | '2. Internal Project' | '3. Billable Project';
+  readonly priority: EViewPriority;
 }
