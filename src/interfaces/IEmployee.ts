@@ -1,4 +1,4 @@
-import { EViewPriority } from '../sheet/EPriority';
+import { EViewPriority } from "../sheet/EPriority";
 
 export default interface IEmployee {
   readonly id: number;
@@ -8,5 +8,6 @@ export default interface IEmployee {
   readonly familyName: string | null;
   readonly track: string | null;
   readonly level: number;
+  readonly location: string | null;
   readonly priority: EViewPriority;
 }

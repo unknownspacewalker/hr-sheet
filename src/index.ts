@@ -58,6 +58,7 @@ import sheet from "./sheet";
             familyName: employee.general.familyName,
             track: employee.latestGrade.track,
             level: employee.latestGrade.level,
+            location: employee.latestGrade.location,
             priority: getPriority(
               await getEmployeeProjects(
                 employee.general.username,

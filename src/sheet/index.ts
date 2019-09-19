@@ -197,7 +197,7 @@ const populateWithUserInput = (
 const populateByMap = (
   sheetDataMap: Map<number, ISheetRowData>
 ): ((value: ISheetRowData) => ISheetRowData) => {
-  return (value: ISheetRowData) =>
+  return (value: ISheetRowData): ISheetRowData =>
     populateWithUserInput(value, sheetDataMap.get(value.DeveloperId));
 };
 
