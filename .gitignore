@@ -45,6 +45,10 @@ typings/
 # Optional eslint cache
 .eslintcache
 
+#vscode workspace file
+*.code-workspace
+.vscode
+
 # Optional REPL history
 .node_repl_history
 

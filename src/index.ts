@@ -1,7 +1,7 @@
-import signIn from "./pmo/api/auth/signIn";
-import getAllActive from "./pmo/api/employees/getAllActive";
+import signIn from './pmo/api/auth/signIn';
+import getAllActive from './pmo/api/employees/getAllActive';
 
-import sheet from "./sheet";
+import sheet from './sheet';
 
 (async () => {
   try {
@@ -10,7 +10,7 @@ import sheet from "./sheet";
 
     await sheet();
   } catch (e) {
-    console.log("error:", e.message);
-    console.log("stack:", e.stack);
+    console.log('error:', e.message);
+    console.log('stack:', e.stack);
   }
 })();

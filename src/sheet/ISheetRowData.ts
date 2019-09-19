@@ -1,5 +1,5 @@
-import { EPriority } from "./EPriority";
-import IEvent from "./IEvent";
+import { EPriority } from './EPriority';
+import IEvent from './IEvent';
 
 export default interface ISheetRowData {
   DM: string;
