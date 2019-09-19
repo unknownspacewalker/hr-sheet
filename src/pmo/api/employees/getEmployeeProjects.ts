@@ -2,7 +2,11 @@ import axios from 'axios';
 
 const { HOST, PORT } = process.env;
 
-function getEmployeeProjects(username: string, jsessionid: string): Promise<string[]> {
+function getEmployeeProjects(
+  username: string,
+  jsessionid: string,
+  incCounter: () => void,
+): Promise<string[]> {
   const url = `http://${HOST}:${PORT}/service/employees/${username}/projects`;
 
   return axios.get<string[]>(url, {
@@ -11,7 +15,10 @@ function getEmployeeProjects(username: string, jsessionid: string): Promise<stri
       'Content-Type': 'application/json',
     },
   })
-    .then(({ data }) => data);
+    .then(({ data }) => {
+      incCounter();
+      return data;
+    });
 }
 
 export default getEmployeeProjects;
