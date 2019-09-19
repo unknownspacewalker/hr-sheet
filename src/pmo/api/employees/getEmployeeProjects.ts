@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-function getEmployeeProjects(projectName: string, jsessionid: string): Promise<string[]> {
-  const { HOST, PORT } = process.env;
-  const url = `http://${HOST}:${PORT}/service/employees/${projectName}/projects`;
+const { HOST, PORT } = process.env;
+
+function getEmployeeProjects(username: string, jsessionid: string): Promise<string[]> {
+  const url = `http://${HOST}:${PORT}/service/employees/${username}/projects`;
 
   return axios.get<string[]>(url, {
     headers: {
