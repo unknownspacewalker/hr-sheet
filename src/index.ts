@@ -8,30 +8,48 @@ import getEmployeeProjects from './pmo/api/employees/getEmployeeProjects';
 (async () => {
   try {
     const PMOAuthSpinner = ora('Authorization in PMO').start();
-    const jsessionid = await signIn();
-    PMOAuthSpinner.succeed();
+    let jsessionid: string;
+    try {
+      jsessionid = await signIn();
+      PMOAuthSpinner.succeed();
+    } catch (e) {
+      PMOAuthSpinner.fail();
+      throw (e);
+    }
 
-    const PMOGetEmployees = ora('Fetching PMO employee list').start();
-    const allEmployees = await getAllActive(jsessionid);
-    PMOGetEmployees.succeed();
+    const PMOGetEmployeesSpinner = ora('Fetching PMO employee list').start();
+    let allEmployees = [];
+    try {
+      allEmployees = await getAllActive(jsessionid);
+      PMOGetEmployeesSpinner.succeed();
+    } catch (e) {
+      PMOGetEmployeesSpinner.fail();
+      throw (e);
+    }
 
     const UIRawEngeneers = allEmployees
       .filter((employee) => employee.latestGrade.specialization === 'UI');
 
-    const PMOGetEmployeesProjects = ora(`Fetching employees' projects [0/${UIRawEngeneers.length}]`).start();
-    let counter = 0;
-    const incCounter = () => {
-      counter += 1;
-      PMOGetEmployeesProjects.text = `Fetching UI engineers' projects [${counter}/${UIRawEngeneers.length}]`;
-    };
-    const uiEngineers = await Promise.all(UIRawEngeneers
-      .map(async (uiEngineer) => ({
-        uiEngineer,
-        projects: await getEmployeeProjects(uiEngineer.general.username, jsessionid, incCounter),
-      })));
-    PMOGetEmployeesProjects.succeed();
+    const PMOGetEmployeesProjectsSpinner = ora(`Fetching employees' projects [0/${UIRawEngeneers.length}]`).start();
+    let uiEngineers = [];
+    try {
+      let counter = 0;
+      const incCounter = () => {
+        counter += 1;
+        PMOGetEmployeesProjectsSpinner.text = `Fetching UI engineers' projects [${counter}/${UIRawEngeneers.length}]`;
+      };
+      uiEngineers = await Promise.all(UIRawEngeneers
+        .map(async (uiEngineer) => ({
+          uiEngineer,
+          projects: await getEmployeeProjects(uiEngineer.general.username, jsessionid, incCounter),
+        })));
+      PMOGetEmployeesProjectsSpinner.succeed();
+    } catch (e) {
+      PMOGetEmployeesProjectsSpinner.fail();
+      throw (e);
+    }
 
-    console.log(uiEngineers.length);
+    console.log(`Loaded ${uiEngineers.length} engineers`);
   } catch (e) {
     console.log('error:', e.message);
   }
