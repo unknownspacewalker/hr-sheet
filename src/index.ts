@@ -3,6 +3,7 @@ import ora from 'ora';
 import signIn from './pmo/api/auth/signIn';
 import getAllActive from './pmo/api/employees/getAllActive';
 import getEmployeeProjects from './pmo/api/employees/getEmployeeProjects';
+import getPriority from './pmo/utils/getPriority';
 
 
 (async () => {
@@ -28,10 +29,10 @@ import getEmployeeProjects from './pmo/api/employees/getEmployeeProjects';
     }
 
     const UIRawEngeneers = allEmployees
-      .filter((employee) => employee.latestGrade.specialization === 'UI');
+      .filter((employee) => employee.latestGrade.specialization === 'UI').slice(0, 10);
 
     const PMOGetEmployeesProjectsSpinner = ora(`Fetching employees' projects [0/${UIRawEngeneers.length}]`).start();
-    let uiEngineers = [];
+    let uiEngineers: IEmployee[] = [];
     try {
       let counter = 0;
       const incCounter = () => {
@@ -39,9 +40,17 @@ import getEmployeeProjects from './pmo/api/employees/getEmployeeProjects';
         PMOGetEmployeesProjectsSpinner.text = `Fetching UI engineers' projects [${counter}/${UIRawEngeneers.length}]`;
       };
       uiEngineers = await Promise.all(UIRawEngeneers
-        .map(async (uiEngineer) => ({
-          uiEngineer,
-          projects: await getEmployeeProjects(uiEngineer.general.username, jsessionid, incCounter),
+        .map(async (employee: IGetAllActiveResponseItem): Promise<IEmployee> => ({
+          id: employee.id,
+          manager: employee.jobInfo.managerId,
+          username: employee.general.username,
+          firstName: employee.general.firstName,
+          familyName: employee.general.familyName,
+          track: employee.latestGrade.track,
+          level: employee.latestGrade.level,
+          priority: getPriority(
+            await getEmployeeProjects(employee.general.username, jsessionid, incCounter),
+          ),
         })));
       PMOGetEmployeesProjectsSpinner.succeed();
     } catch (e) {
@@ -49,7 +58,7 @@ import getEmployeeProjects from './pmo/api/employees/getEmployeeProjects';
       throw (e);
     }
 
-    console.log(`Loaded ${uiEngineers.length} engineers`);
+    console.log('success:', uiEngineers);
   } catch (e) {
     console.log('error:', e.message);
   }

@@ -5,8 +5,8 @@ dotenv.config();
 
 const url = 'http://internaltools.pmo.aws.griddynamics.net:8080/service/api/employee/active';
 
-function getAllActive(jsessionid: string): Promise<IEmployee[]> {
-  return axios.get<IEmployee[]>(url, {
+function getAllActive(jsessionid: string): Promise<IGetAllActiveResponse> {
+  return axios.get<IGetAllActiveResponse>(url, {
     headers: {
       'Cookie': `JSESSIONID=${jsessionid}`,
       'Content-Type': 'application/json',
