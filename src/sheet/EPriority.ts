@@ -5,7 +5,7 @@ export enum EPriority {
 }
 
 export enum EViewPriority {
-  Bench = '1. Bench',
-  InternalProject = '2. Internal project',
-  CustomerProject = '3. Billable project'
+  Bench = "1. Bench",
+  InternalProject = "2. Internal project",
+  CustomerProject = "3. Billable project"
 }
