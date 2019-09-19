@@ -1,10 +1,14 @@
-import { google } from 'googleapis';
-import dotenv from 'dotenv';
-import client from '../googleAuth/client';
-import ISheetRowData from './ISheetRowData';
-import { EPriority, EViewPriority } from './EPriority';
-import IEvent from './IEvent';
-import ISheetData from './ISheetData';
+import dotenv from "dotenv";
+import { google } from "googleapis";
+import client from "../googleAuth/client";
+import ISheetRowData from "./ISheetRowData";
+import { EPriority, EViewPriority } from "./EPriority";
+import IEvent from "./IEvent";
+import ISheetData from "./ISheetData";
+
+interface Remote {
+  
+}
 
 dotenv.config();
 
@@ -13,28 +17,12 @@ const { SHEET_ID, PAGE_NAME } = process.env;
 const fetchCurrentData = async (): Promise<string[][]> => {
   const resolvedClient = await client;
 
-  return new Promise((resolve, reject) => {
-    const sheets = google.sheets('v4');
-    sheets.spreadsheets.values.get(
-      {
-        auth: resolvedClient,
-        spreadsheetId: SHEET_ID,
-        range: `${PAGE_NAME}!A2:P`,
-      },
-      (err, res) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(res.data.values);
-      },
-    );
-  });
-};
-
-const writeSheet = async (data: ISheetData) => {
-  data.rows.map(formatRowData);
-  const sheets = google.sheets('v4');
-  sheets.spreadsheets.values.batchUpdate;
+  const sheets = google.sheets("v4");
+  return (await sheets.spreadsheets.values.get({
+    auth: resolvedClient,
+    spreadsheetId: SHEET_ID,
+    range: `${PAGE_NAME}!A2:P`
+  })).data.values;
 };
 
 const parsePriority = (priority: string): EPriority => {
@@ -64,29 +52,34 @@ const formatPriority = (priority: number): EViewPriority => {
 };
 
 const parseEvent = (event: string): IEvent => {
-  console.log('event: ', event);
   const {
-    groups: {
-      year, month, day, name,
-    },
+    groups: { year, month, day, name }
   } = /^(?<day>\d{2}).(?<month>\d{2}).(?<year>\d{4}) \((?<name>\w+\s\w+)\)$/gm.exec(
-    event,
+    event
   );
-  console.log('name: ', name);
+
   return {
     date: new Date(Number(year), Number(month), Number(day)),
-    fullName: name,
+    fullName: name
   };
 };
 
-const formatEvent = (event: IEvent): string => `${event.date.getDay()}.${event.date.getMonth()}.${event.date.getFullYear()} (${
-  event.fullName
-})`;
+const formatEvent = (event: IEvent): string =>
+  `${event.date.getDay()}.${event.date.getMonth()}.${event.date.getFullYear()} (${
+    event.fullName
+  })`;
 
 const notEmpty = (value: string): boolean => value.length > 0;
 
 /** Service rows uses columns before "J" :) */
 const notService = (value: string[]): boolean => value.length >= 10;
+
+const comparePriorityAsc = (
+  firstData: ISheetRowData,
+  secondData: ISheetRowData
+): number => {
+  return firstData.Priority - secondData.Priority;
+};
 
 const parseRowData = (data: string[]): ISheetRowData => {
   const [
@@ -100,7 +93,7 @@ const parseRowData = (data: string[]): ISheetRowData => {
     Priority,
     OnBoarded,
     Experience,
-    Total,
+    ,
     ...PlannedInterviews
   ] = data;
 
@@ -111,7 +104,7 @@ const parseRowData = (data: string[]): ISheetRowData => {
     Developer,
     Location,
     Grade,
-    English: English === 'yes',
+    English: English === "yes",
     Priority: parsePriority(Priority),
     OnBoarded: OnBoarded ? parseEvent(OnBoarded) : null,
     Experience: Experience.length
@@ -120,7 +113,7 @@ const parseRowData = (data: string[]): ISheetRowData => {
     Total: PlannedInterviews.length,
     PlannedInterviews: PlannedInterviews.length
       ? PlannedInterviews.filter(notEmpty).map(parseEvent)
-      : [],
+      : []
   };
 };
 
@@ -131,14 +124,41 @@ const formatRowData = (data: ISheetRowData): string[] => [
   data.Developer,
   data.Location,
   data.Grade,
-  data.English ? 'yes' : 'no',
-  formatPriority(data.Priority),
-  formatEvent(data.OnBoarded),
-  data.Experience.map(formatEvent).join('\n'),
+  data.English ? "yes" : "no",
+  data.Priority ? formatPriority(data.Priority) : "",
+  data.OnBoarded ? formatEvent(data.OnBoarded) : "",
+  data.Experience.map(formatEvent).join("\n"),
   data.PlannedInterviews.length.toString(),
-  ...data.PlannedInterviews.map(formatEvent),
+  ...data.PlannedInterviews.map(formatEvent)
 ];
 
+const writeSheet = async (data: ISheetData) => {
+  const sheets = google.sheets("v4");
+  return sheets.spreadsheets.values.batchUpdate({
+    auth: await client,
+    spreadsheetId: "1MmI-zciDNo6JEIerpWpkMgPQ901SqdMUmZTscII6Rnk",
+    requestBody: {
+      valueInputOption: "USER_ENTERED",
+      data: [
+        {
+          range: "DemoSheet!A2:P",
+          values: data.rows.map(formatRowData)
+        }
+      ]
+    }
+  });
+};
+
+const fetchSheetData = async (): Promise<ISheetData> => ({
+  rows: (await fetchCurrentData()).filter(notService).map(parseRowData)
+});
+
+const createFromRemote()
+
 export default async () => {
-  console.log((await fetchCurrentData()).filter(notService).map(parseRowData));
+  const sheetData = await fetchSheetData();
+
+  sheetData.rows.sort(comparePriorityAsc);
+
+  writeSheet(sheetData);
 };
