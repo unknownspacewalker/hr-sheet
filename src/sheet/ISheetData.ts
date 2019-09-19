@@ -1,7 +1,5 @@
-import ISheetRowData from "./ISheetRowData";
+import ISheetRowData from './ISheetRowData';
 
-interface ISheetData {
+export default interface ISheetData {
   rows: ISheetRowData[];
-}
-
-export default ISheetData;
+};
