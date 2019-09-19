@@ -14,5 +14,4 @@ export default interface ISheetRowData {
   Experience: IEvent[];
   Total: number;
   PlannedInterviews: IEvent[];
-  toString: () => string;
 }
