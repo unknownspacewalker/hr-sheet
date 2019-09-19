@@ -1,1 +1,1 @@
-export * from './utils';
+export { default } from './getPriority';
