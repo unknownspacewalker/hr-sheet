@@ -3,9 +3,20 @@ function isBenchAccount(accountName: string) {
 }
 function isInternalAccount(accountName: string) {
   const internalAccounts = [
-    'Marketing',
     'Tools',
+    'TA Offshore',
+    'TA Onsite',
+    'Sales Management',
     'R&D General',
+    'Pre-Sales',
+    'Office',
+    'Marketing',
+    'Internship',
+    'IT',
+    'GridDynamics',
+    'Engineering Management',
+    'Corporate Delivery Bench',
+    'Delivery Management',
     'GridU Trainings',
   ];
 
