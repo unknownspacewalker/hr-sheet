@@ -1,4 +1,4 @@
-interface IEmployee {
+interface IGetAllActiveResponseItem {
   readonly id: number;
   general: {
     readonly username: string | null;
@@ -36,3 +36,5 @@ interface IEmployee {
   },
   readonly projects: string[]
 }
+
+interface IGetAllActiveResponse extends Array<IGetAllActiveResponseItem> { }
