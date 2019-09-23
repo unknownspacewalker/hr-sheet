@@ -1,11 +1,11 @@
-import dotenv from "dotenv";
-import { google } from "googleapis";
-import client from "../googleAuth/client";
-import ISheetRowData from "./ISheetRowData";
-import { EPriority, EViewPriority } from "./EPriority";
-import IEvent from "./IEvent";
-import ISheetData from "./ISheetData";
-import IEmployee from "../interfaces/IEmployee";
+import dotenv from 'dotenv';
+import { google } from 'googleapis';
+import client from '../googleAuth/client';
+import ISheetRowData from './ISheetRowData';
+import { EPriority, EViewPriority } from './EPriority';
+import IEvent from './IEvent';
+import ISheetData from './ISheetData';
+import IEmployee from '../interfaces/IEmployee';
 
 dotenv.config();
 
@@ -14,12 +14,22 @@ const { SHEET_ID, PAGE_NAME } = process.env;
 const fetchCurrentData = async (): Promise<string[][]> => {
   const resolvedClient = await client;
 
-  const sheets = google.sheets("v4");
-  return (await sheets.spreadsheets.values.get({
+  const sheets = google.sheets('v4');
+  const { data: { values } } = (await sheets.spreadsheets.values.get({
     auth: resolvedClient,
     spreadsheetId: SHEET_ID,
-    range: `${PAGE_NAME}!A2:P`
-  })).data.values;
+    range: `${PAGE_NAME}!A2:P`,
+  }));
+
+  await sheets.spreadsheets.values.batchClear({
+    auth: resolvedClient,
+    spreadsheetId: SHEET_ID,
+    requestBody: {
+      ranges: [`${PAGE_NAME}!A2:P`],
+    },
+  });
+
+  return values || [];
 };
 
 const parsePriority = (priority: string): EPriority => {
@@ -50,21 +60,22 @@ const formatPriority = (priority: number): EViewPriority => {
 
 const parseEvent = (event: string): IEvent => {
   const {
-    groups: { year, month, day, name }
+    groups: {
+      year, month, day, name,
+    },
   } = /^(?<day>\d{2}).(?<month>\d{2}).(?<year>\d{4}) \((?<name>\w+\s\w+)\)$/gm.exec(
-    event
+    event,
   );
 
   return {
     date: new Date(Number(year), Number(month), Number(day)),
-    fullName: name
+    fullName: name,
   };
 };
 
-const formatEvent = (event: IEvent): string =>
-  `${event.date.getDay()}.${event.date.getMonth()}.${event.date.getFullYear()} (${
-    event.fullName
-  })`;
+const formatEvent = (event: IEvent): string => `${event.date.getDay()}.${event.date.getMonth()}.${event.date.getFullYear()} (${
+  event.fullName
+})`;
 
 const notEmpty = (value: string): boolean => value.length > 0;
 
@@ -73,33 +84,32 @@ const notService = (value: string[]): boolean => value.length >= 10;
 
 const comparePriorityAsc = (
   firstData: ISheetRowData,
-  secondData: ISheetRowData
+  secondData: ISheetRowData,
 ): number => firstData.Priority - secondData.Priority;
 
 const parseRowData = (data: string[]): ISheetRowData => {
   const [
     DM,
     Availability,
-    // DeveloperId,
+    DeveloperId,
     Developer,
     Location,
     Grade,
     English,
     Priority,
     OnBoarded,
-    Experience,
-    ,
+    Experience, ,
     ...PlannedInterviews
   ] = data;
 
   return {
     DM,
     Availability,
-    DeveloperId: 0,
+    DeveloperId: Number(DeveloperId),
     Developer,
     Location,
     Grade,
-    English: English === "yes",
+    English: English === 'yes',
     Priority: parsePriority(Priority),
     OnBoarded: OnBoarded ? parseEvent(OnBoarded) : null,
     Experience: Experience.length
@@ -108,7 +118,7 @@ const parseRowData = (data: string[]): ISheetRowData => {
     Total: PlannedInterviews.length,
     PlannedInterviews: PlannedInterviews.length
       ? PlannedInterviews.filter(notEmpty).map(parseEvent)
-      : []
+      : [],
   };
 };
 
@@ -119,89 +129,83 @@ const formatRowData = (data: ISheetRowData): string[] => [
   data.Developer,
   data.Location,
   data.Grade,
-  data.English ? "yes" : "no",
-  data.Priority ? formatPriority(data.Priority) : "",
-  data.OnBoarded ? formatEvent(data.OnBoarded) : "",
-  data.Experience.map(formatEvent).join("\n"),
+  data.English ? 'yes' : 'no',
+  data.Priority ? formatPriority(data.Priority) : '',
+  data.OnBoarded ? formatEvent(data.OnBoarded) : '',
+  data.Experience.map(formatEvent).join('\n'),
   data.PlannedInterviews.length.toString(),
-  ...data.PlannedInterviews.map(formatEvent)
+  ...data.PlannedInterviews.map(formatEvent),
 ];
 
 const writeSheet = async (data: ISheetData) => {
-  const sheets = google.sheets("v4");
+  const sheets = google.sheets('v4');
   return sheets.spreadsheets.values.batchUpdate({
     auth: await client,
-    spreadsheetId: "1MmI-zciDNo6JEIerpWpkMgPQ901SqdMUmZTscII6Rnk",
+    spreadsheetId: SHEET_ID,
     requestBody: {
-      valueInputOption: "USER_ENTERED",
+      valueInputOption: 'USER_ENTERED',
       data: [
         {
-          range: "DemoSheet!A2:P",
-          values: data.rows.map(formatRowData)
-        }
-      ]
-    }
+          range: `${PAGE_NAME}!A2:P`,
+          values: data.rows.map(formatRowData),
+        },
+      ],
+    },
   });
 };
 
 const concatIfNotNull = (
   separator: string,
   ...parts: (string | null | number)[]
-): string => parts.filter(part => part !== null).join(separator);
+): string => parts.filter((part) => part !== null).join(separator);
 
 const fetchSheetData = async (): Promise<ISheetData> => ({
-  rows: (await fetchCurrentData()).filter(notService).map(parseRowData)
+  rows: (await fetchCurrentData()).filter(notService).map(parseRowData),
 });
 
 const createFromEmployee = (employee: IEmployee): ISheetRowData => ({
-  DM: employee.manager ? employee.manager : "",
-  Availability: "",
+  DM: employee.manager ? employee.manager : 'N/A',
+  Availability: '',
   DeveloperId: employee.id,
-  Developer: concatIfNotNull(" ", employee.firstName, employee.familyName),
+  Developer: concatIfNotNull(' ', employee.firstName, employee.familyName),
   Location: employee.location,
-  Grade: concatIfNotNull(" ", employee.track, employee.level),
+  Grade: concatIfNotNull(' ', employee.track, employee.level),
   English: false,
   Priority: parsePriority(employee.priority),
   OnBoarded: null,
   Experience: [],
   Total: 0,
-  PlannedInterviews: []
+  PlannedInterviews: [],
 });
 
 const reduceToMapByDeveloperId = (
-  data: ISheetRowData[]
-): Map<number, ISheetRowData> => {
-  return data.reduce(
-    (accumulator: Map<number, ISheetRowData>, value: ISheetRowData) => {
-      return accumulator.set(value.DeveloperId, value);
-    },
-    new Map()
-  );
-};
+  data: ISheetRowData[],
+): Map<number, ISheetRowData> => data.reduce(
+  (accumulator: Map<number, ISheetRowData>, value: ISheetRowData) => (
+    accumulator.set(value.DeveloperId, value)
+  ),
+  new Map(),
+);
 
 const populateWithUserInput = (
   value: ISheetRowData,
-  source: ISheetRowData
-): ISheetRowData => {
-  return {
-    ...value,
-    Availability: source.Availability,
-    English: source.English,
-    OnBoarded: source.OnBoarded,
-    Experience: source.Experience,
-    Total: source.Total,
-    PlannedInterviews: source.PlannedInterviews
-  };
-};
+  source: ISheetRowData,
+): ISheetRowData => ({
+  ...value,
+  Availability: source.Availability,
+  English: source.English,
+  OnBoarded: source.OnBoarded,
+  Experience: source.Experience,
+  Total: source.Total,
+  PlannedInterviews: source.PlannedInterviews,
+});
 
 const populateByMap = (
-  sheetDataMap: Map<number, ISheetRowData>
-): ((value: ISheetRowData) => ISheetRowData) => {
-  return (value: ISheetRowData): ISheetRowData =>
-    sheetDataMap.get(value.DeveloperId)
-      ? populateWithUserInput(value, sheetDataMap.get(value.DeveloperId))
-      : value;
-};
+  sheetDataMap: Map<number, ISheetRowData>,
+): ((value: ISheetRowData) => ISheetRowData
+  ) => (value: ISheetRowData): ISheetRowData => (sheetDataMap.get(value.DeveloperId)
+  ? populateWithUserInput(value, sheetDataMap.get(value.DeveloperId))
+  : { ...value });
 
 export default async (employees: IEmployee[]) => {
   const sheetData = await fetchSheetData();
@@ -210,6 +214,6 @@ export default async (employees: IEmployee[]) => {
     rows: employees
       .map(createFromEmployee)
       .map(populateByMap(reduceToMapByDeveloperId(sheetData.rows)))
-      .sort(comparePriorityAsc)
+      .sort(comparePriorityAsc),
   });
 };
