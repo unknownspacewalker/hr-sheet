@@ -1,20 +1,16 @@
 import ora from 'ora';
 
-import signIn from './pmo/api/auth/signIn';
-import getAllActive from './pmo/api/employees/getAllActive';
-import getEmployeeProjects from './pmo/api/employees/getEmployeeProjects';
-import getPriority from './pmo/utils/getPriority';
-
+import PMO from './pmo';
 import sheet from './sheet';
-import IEmployee from './interfaces/IEmployee';
 
 (async () => {
   try {
+    const pmo = new PMO();
+
     const PMOAuthSpinner = ora('Authorization in PMO')
       .start();
-    let jsessionid: string;
     try {
-      jsessionid = await signIn();
+      await pmo.auth();
       PMOAuthSpinner.succeed();
     } catch (e) {
       PMOAuthSpinner.fail();
@@ -23,61 +19,38 @@ import IEmployee from './interfaces/IEmployee';
 
     const PMOGetEmployeesSpinner = ora('Fetching PMO employee list')
       .start();
-    let allEmployees = [];
     try {
-      allEmployees = await getAllActive(jsessionid);
+      await pmo.getActiveUIEmployees();
       PMOGetEmployeesSpinner.succeed();
     } catch (e) {
       PMOGetEmployeesSpinner.fail();
       throw e;
     }
 
-    const UIRawEngeneers = allEmployees
-      .filter((employee) => employee.latestGrade.specialization === 'UI')
-      .slice(0, 10);
-
     const PMOGetEmployeesProjectsSpinner = ora(
-      `Fetching employees' projects [0/${UIRawEngeneers.length}]`,
+      `Fetching employees' projects [0/${pmo.rawUIEngineers.length}]`,
     )
       .start();
-    let uiEngineers: IEmployee[] = [];
     try {
       let counter = 0;
-      const incCounter = () => {
+      const incrementCounter = () => {
         counter += 1;
-        PMOGetEmployeesProjectsSpinner.text = `Fetching UI engineers' projects [${counter}/${UIRawEngeneers.length}]`;
+        PMOGetEmployeesProjectsSpinner.text = (
+          `Fetching employees' projects [${counter}/${pmo.rawUIEngineers.length}]`
+        );
       };
-      uiEngineers = await Promise.all(
-        UIRawEngeneers.map(
-          async (employee: IGetAllActiveResponseItem): Promise<IEmployee> => ({
-            id: employee.id,
-            manager: employee.jobInfo.managerId,
-            username: employee.general.username,
-            firstName: employee.general.firstName,
-            familyName: employee.general.familyName,
-            track: employee.latestGrade.track,
-            level: employee.latestGrade.level,
-            location: employee.latestGrade.location,
-            priority: getPriority(
-              await getEmployeeProjects(
-                employee.general.username,
-                jsessionid,
-                incCounter,
-              ),
-            ),
-          }),
-        ),
-      );
-
+      await pmo.getUIEngineers(incrementCounter);
       PMOGetEmployeesProjectsSpinner.succeed();
 
-      await sheet(uiEngineers);
+      const GoogleSheetSpinner = ora('Writing to Google Sheet').start();
+      await sheet(pmo.UIEngineers);
+      GoogleSheetSpinner.succeed();
     } catch (e) {
       PMOGetEmployeesProjectsSpinner.fail();
       throw e;
     }
 
-    console.log('success:', uiEngineers);
+    console.log('success:', pmo.UIEngineers);
   } catch (e) {
     console.log('error:', e.message);
     console.log('stack:', e.stack);
