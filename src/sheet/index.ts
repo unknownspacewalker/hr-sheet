@@ -178,7 +178,7 @@ const createFromEmployee = (employee: IEmployee): ISheetRowData => ({
   DeveloperId: employee.id,
   Developer: concatIfNotNull(' ', employee.firstName, employee.familyName),
   Location: employee.location,
-  Grade: concatIfNotNull(' ', employee.track, employee.level),
+  Grade: concatIfNotNull('', employee.track, employee.level),
   English: false,
   Priority: parsePriority(employee.priority),
   OnBoarded: null,
