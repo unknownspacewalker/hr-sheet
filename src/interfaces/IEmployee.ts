@@ -1,4 +1,4 @@
-import { EViewPriority } from "../sheet/EPriority";
+import { EViewPriority } from '../sheet/EPriority';
 
 export default interface IEmployee {
   readonly id: number;
