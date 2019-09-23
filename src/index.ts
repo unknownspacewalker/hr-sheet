@@ -33,11 +33,11 @@ import IEmployee from './interfaces/IEmployee';
     }
 
     const UIRawEngeneers = allEmployees
-      .filter(employee => employee.latestGrade.specialization === 'UI')
+      .filter((employee) => employee.latestGrade.specialization === 'UI')
       .slice(0, 10);
 
     const PMOGetEmployeesProjectsSpinner = ora(
-      `Fetching employees' projects [0/${UIRawEngeneers.length}]`
+      `Fetching employees' projects [0/${UIRawEngeneers.length}]`,
     )
       .start();
     let uiEngineers: IEmployee[] = [];
