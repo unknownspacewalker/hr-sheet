@@ -18,14 +18,14 @@ const fetchCurrentData = async (): Promise<string[][]> => {
   const { data: { values } } = (await sheets.spreadsheets.values.get({
     auth: resolvedClient,
     spreadsheetId: SHEET_ID,
-    range: `${PAGE_NAME}!A2:P`,
+    range: `${PAGE_NAME}!A2:Q`,
   }));
 
   await sheets.spreadsheets.values.batchClear({
     auth: resolvedClient,
     spreadsheetId: SHEET_ID,
     requestBody: {
-      ranges: [`${PAGE_NAME}!A2:P`],
+      ranges: [`${PAGE_NAME}!A2:Q`],
     },
   });
 
@@ -59,11 +59,12 @@ const formatPriority = (priority: number): EViewPriority => {
 };
 
 const parseEvent = (event: string): IEvent => {
+  console.log(event);
   const {
     groups: {
       year, month, day, name,
     },
-  } = /^(?<day>\d{2}).(?<month>\d{2}).(?<year>\d{4}) \((?<name>\w+\s\w+)\)$/gm.exec(
+  } = /^(?<day>\d{1,2}).(?<month>\d{1,2}).(?<year>\d{4}) \((?<name>\w+\s\w+)\)$/gm.exec(
     event,
   );
 
@@ -73,11 +74,14 @@ const parseEvent = (event: string): IEvent => {
   };
 };
 
-const formatEvent = (event: IEvent): string => `${event.date.getDay()}.${event.date.getMonth()}.${event.date.getFullYear()} (${
+const formatEvent = (event: IEvent): string => `${event.date.getUTCDate()}.${event.date.getUTCMonth()}.${event.date.getUTCFullYear()} (${
   event.fullName
 })`;
 
-const notEmpty = (value: string): boolean => value.length > 0;
+const notEmpty = (value: string): boolean => {
+  console.log(value);
+  return value.length > 0;
+};
 
 /** Service rows uses columns before "J" :) */
 const notService = (value: string[]): boolean => value.length >= 10;
@@ -146,7 +150,7 @@ const writeSheet = async (data: ISheetData) => {
       valueInputOption: 'USER_ENTERED',
       data: [
         {
-          range: `${PAGE_NAME}!A2:P`,
+          range: `${PAGE_NAME}!A2:Q`,
           values: data.rows.map(formatRowData),
         },
       ],
