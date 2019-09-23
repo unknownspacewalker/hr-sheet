@@ -27,17 +27,8 @@ import sheet from './sheet';
       throw e;
     }
 
-<<<<<<< HEAD
-    const UIRawEngeneers = allEmployees
-      .filter((employee) => employee.latestGrade.specialization === 'UI')
-      .slice(0, 20);
-
-    const PMOGetEmployeesProjectsSpinner = ora(
-      `Fetching employees' projects [0/${UIRawEngeneers.length}]`,
-=======
     const PMOGetEmployeesProjectsSpinner = ora(
       `Fetching employees' projects [0/${pmo.rawUIEngineers.length}]`,
->>>>>>> 3b22d2e1a55fd429cba350ee7ac3692282c76174
     )
       .start();
     try {
