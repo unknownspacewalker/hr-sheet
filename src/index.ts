@@ -1,16 +1,17 @@
-import ora from "ora";
+import ora from 'ora';
 
-import signIn from "./pmo/api/auth/signIn";
-import getAllActive from "./pmo/api/employees/getAllActive";
-import getEmployeeProjects from "./pmo/api/employees/getEmployeeProjects";
-import getPriority from "./pmo/utils/getPriority";
+import signIn from './pmo/api/auth/signIn';
+import getAllActive from './pmo/api/employees/getAllActive';
+import getEmployeeProjects from './pmo/api/employees/getEmployeeProjects';
+import getPriority from './pmo/utils/getPriority';
 
-import sheet from "./sheet";
-import IEmployee from "./interfaces/IEmployee";
+import sheet from './sheet';
+import IEmployee from './interfaces/IEmployee';
 
 (async () => {
   try {
-    const PMOAuthSpinner = ora("Authorization in PMO").start();
+    const PMOAuthSpinner = ora('Authorization in PMO')
+      .start();
     let jsessionid: string;
     try {
       jsessionid = await signIn();
@@ -20,7 +21,8 @@ import IEmployee from "./interfaces/IEmployee";
       throw e;
     }
 
-    const PMOGetEmployeesSpinner = ora("Fetching PMO employee list").start();
+    const PMOGetEmployeesSpinner = ora('Fetching PMO employee list')
+      .start();
     let allEmployees = [];
     try {
       allEmployees = await getAllActive(jsessionid);
@@ -31,12 +33,13 @@ import IEmployee from "./interfaces/IEmployee";
     }
 
     const UIRawEngeneers = allEmployees
-      .filter(employee => employee.latestGrade.specialization === "UI")
+      .filter(employee => employee.latestGrade.specialization === 'UI')
       .slice(0, 10);
 
     const PMOGetEmployeesProjectsSpinner = ora(
       `Fetching employees' projects [0/${UIRawEngeneers.length}]`
-    ).start();
+    )
+      .start();
     let uiEngineers: IEmployee[] = [];
     try {
       let counter = 0;
@@ -59,11 +62,11 @@ import IEmployee from "./interfaces/IEmployee";
               await getEmployeeProjects(
                 employee.general.username,
                 jsessionid,
-                incCounter
-              )
-            )
-          })
-        )
+                incCounter,
+              ),
+            ),
+          }),
+        ),
       );
 
       PMOGetEmployeesProjectsSpinner.succeed();
@@ -74,9 +77,9 @@ import IEmployee from "./interfaces/IEmployee";
       throw e;
     }
 
-    console.log("success:", uiEngineers);
+    console.log('success:', uiEngineers);
   } catch (e) {
-    console.log("error:", e.message);
-    console.log("stack:", e.stack);
+    console.log('error:', e.message);
+    console.log('stack:', e.stack);
   }
 })();
