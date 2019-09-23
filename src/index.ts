@@ -6,14 +6,10 @@ import getEmployeeProjects from "./pmo/api/employees/getEmployeeProjects";
 import getPriority from "./pmo/utils/getPriority";
 
 import sheet from "./sheet";
+import IEmployee from "./interfaces/IEmployee";
 
 (async () => {
   try {
-    // const jsessionid = await signIn();
-    // console.log(await getAllActive(jsessionid));
-
-    await sheet();
-
     const PMOAuthSpinner = ora("Authorization in PMO").start();
     let jsessionid: string;
     try {
@@ -69,7 +65,10 @@ import sheet from "./sheet";
           })
         )
       );
+
       PMOGetEmployeesProjectsSpinner.succeed();
+
+      await sheet(uiEngineers);
     } catch (e) {
       PMOGetEmployeesProjectsSpinner.fail();
       throw e;

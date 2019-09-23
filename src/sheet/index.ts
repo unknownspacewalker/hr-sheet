@@ -198,7 +198,9 @@ const populateByMap = (
   sheetDataMap: Map<number, ISheetRowData>
 ): ((value: ISheetRowData) => ISheetRowData) => {
   return (value: ISheetRowData): ISheetRowData =>
-    populateWithUserInput(value, sheetDataMap.get(value.DeveloperId));
+    sheetDataMap.get(value.DeveloperId)
+      ? populateWithUserInput(value, sheetDataMap.get(value.DeveloperId))
+      : value;
 };
 
 export default async (employees: IEmployee[]) => {
