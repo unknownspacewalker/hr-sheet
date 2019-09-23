@@ -1,11 +1,15 @@
 import dotenv from 'dotenv';
 import { google } from 'googleapis';
+import {
+  setDate, setMonth, setYear, format,
+} from 'date-fns';
 import client from '../googleAuth/client';
 import ISheetRowData from './ISheetRowData';
 import { EPriority, EViewPriority } from './EPriority';
 import IEvent from './IEvent';
 import ISheetData from './ISheetData';
 import IEmployee from '../interfaces/IEmployee';
+
 
 dotenv.config();
 
@@ -59,7 +63,6 @@ const formatPriority = (priority: number): EViewPriority => {
 };
 
 const parseEvent = (event: string): IEvent => {
-  console.log(event);
   const {
     groups: {
       year, month, day, name,
@@ -68,20 +71,22 @@ const parseEvent = (event: string): IEvent => {
     event,
   );
 
+  let parsedDate = new Date();
+  parsedDate = setYear(parsedDate, Number(year));
+  parsedDate = setMonth(parsedDate, Number(month));
+  parsedDate = setDate(parsedDate, Number(day));
+
   return {
-    date: new Date(Number(year), Number(month), Number(day)),
+    date: parsedDate,
     fullName: name,
   };
 };
 
-const formatEvent = (event: IEvent): string => `${event.date.getUTCDate()}.${event.date.getUTCMonth()}.${event.date.getUTCFullYear()} (${
+const formatEvent = (event: IEvent): string => `${format(event.date, 'dd.MM.yyyy')} (${
   event.fullName
 })`;
 
-const notEmpty = (value: string): boolean => {
-  console.log(value);
-  return value.length > 0;
-};
+const notEmpty = (value: string): boolean => value.length > 0;
 
 /** Service rows uses columns before "J" :) */
 const notService = (value: string[]): boolean => value.length >= 10;
