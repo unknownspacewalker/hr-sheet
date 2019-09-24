@@ -9,11 +9,12 @@ import { EPriority, EViewPriority } from './EPriority';
 import IEvent from './IEvent';
 import ISheetData from './ISheetData';
 import IEmployee from '../interfaces/IEmployee';
+import locker from './locker';
 
 
 dotenv.config();
 
-const { SHEET_ID, PAGE_NAME } = process.env;
+const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
 
 const fetchCurrentData = async (): Promise<string[][]> => {
   const resolvedClient = await client;
@@ -217,12 +218,18 @@ const populateByMap = (
   : { ...value });
 
 export default async (employees: IEmployee[]) => {
-  const sheetData = await fetchSheetData();
+  const unlock = await locker(SHEET_ID, Number(PAGE_ID));
 
-  writeSheet({
-    rows: employees
-      .map(createFromEmployee)
-      .map(populateByMap(reduceToMapByDeveloperId(sheetData.rows)))
-      .sort(comparePriorityAsc),
-  });
+  try {
+    const sheetData = await fetchSheetData();
+
+    writeSheet({
+      rows: employees
+        .map(createFromEmployee)
+        .map(populateByMap(reduceToMapByDeveloperId(sheetData.rows)))
+        .sort(comparePriorityAsc),
+    });
+  } finally {
+    unlock();
+  }
 };
