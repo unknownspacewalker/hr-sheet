@@ -3,12 +3,12 @@ import { google } from 'googleapis';
 import {
   setDate, setMonth, setYear, format,
 } from 'date-fns';
-import client from '../googleAuth/client';
+import client from '../auth/client';
 import ISheetRowData from './ISheetRowData';
 import { EPriority, EViewPriority } from './EPriority';
 import IEvent from './IEvent';
 import ISheetData from './ISheetData';
-import IEmployee from '../interfaces/IEmployee';
+import IEmployee from '../../interfaces/IEmployee';
 
 
 dotenv.config();
