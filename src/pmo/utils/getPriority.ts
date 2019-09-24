@@ -1,5 +1,5 @@
 import IEmployee from "../../interfaces/IEmployee";
-import { EViewPriority } from "../../sheet/EPriority";
+import { EViewPriority } from "../../google/interfaces/EPriority";
 
 function isBenchAccount(accountName: string) {
   return accountName === "Corporate Delivery Bench";
