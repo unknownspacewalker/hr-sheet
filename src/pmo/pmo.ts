@@ -2,6 +2,7 @@ import signIn from './api/auth/signIn';
 import getAllActive from './api/employees/getAllActive';
 import getEmployeeProjects from './api/employees/getEmployeeProjects';
 import getPriority from './utils/getPriority';
+import promiseAllWithBandWidth from './utils/promiseAllWithBandWidth';
 import IEmployee from '../interfaces/IEmployee';
 
 class PMO {
@@ -33,9 +34,9 @@ class PMO {
   };
 
   getUIEngineers = async function (callback: () => void) {
-    this.UIEngineers = await Promise.all(
+    this.UIEngineers = await promiseAllWithBandWidth(
       this.rawUIEngineers.map(
-        async (employee: IGetAllActiveResponseItem): Promise<IEmployee> => ({
+        (employee: IGetAllActiveResponseItem): (() => Promise<IEmployee>) => async () => ({
           id: employee.id,
           manager: employee.jobInfo.managerId,
           username: employee.general.username,
