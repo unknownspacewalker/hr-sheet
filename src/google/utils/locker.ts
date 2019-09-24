@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import client from '../googleAuth/client';
+import client from '../auth/client';
 
 const unlockFactory = (
   sheetId: string,
