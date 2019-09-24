@@ -1,11 +1,12 @@
 import ora from 'ora';
 
 import PMO from './pmo';
-import sheet from './sheet';
+import Google from './google';
 
 (async () => {
   try {
     const pmo = new PMO();
+    const google = new Google();
 
     const PMOAuthSpinner = ora('Authorization in PMO')
       .start();
@@ -43,14 +44,12 @@ import sheet from './sheet';
       PMOGetEmployeesProjectsSpinner.succeed();
 
       const GoogleSheetSpinner = ora('Writing to Google Sheet').start();
-      await sheet(pmo.UIEngineers);
+      await google.sync(pmo.UIEngineers);
       GoogleSheetSpinner.succeed();
     } catch (e) {
       PMOGetEmployeesProjectsSpinner.fail();
       throw e;
     }
-
-    console.log('success:', pmo.UIEngineers);
   } catch (e) {
     console.log('error:', e.message);
     console.log('stack:', e.stack);
