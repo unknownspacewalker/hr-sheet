@@ -1,4 +1,4 @@
-import { EPriority, EViewPriority } from '../sheet/EPriority';
+import { EPriority, EViewPriority } from '../interfaces/EPriority';
 
 const formatPriority = (priority: number): EViewPriority => {
   switch (priority) {

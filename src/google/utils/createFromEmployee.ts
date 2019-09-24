@@ -1,6 +1,6 @@
 import IEmployee from '../../interfaces/IEmployee';
-import ISheetRowData from '../sheet/ISheetRowData';
-import concatIfNotNull from '../sheet/concatIfNotNull';
+import ISheetRowData from '../interfaces/ISheetRowData';
+import concatIfNotNull from './concatIfNotNull';
 import parsePriority from './parsePriority';
 
 const createFromEmployee = (employee: IEmployee): ISheetRowData => ({
