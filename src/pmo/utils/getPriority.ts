@@ -45,7 +45,6 @@ function getPriority(projects: string[]): IEmployee['priority'] {
       currentPriority = accountPriority;
     }
   });
-  console.log('PRIORITY:', currentPriority);
   return currentPriority;
 }
 
