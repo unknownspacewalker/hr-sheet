@@ -26,7 +26,7 @@ class PMO {
     const rawEmployees = await getAllActive(this.jsessionid);
     this.rawUIEngineers = rawEmployees
       .filter((employee) => employee.latestGrade.specialization === 'UI')
-      .slice(0, 25);
+      .slice(0, 15);
   };
 
   getAccountType = async function () {
