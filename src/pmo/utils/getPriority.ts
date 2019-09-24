@@ -18,7 +18,6 @@ function isInternalAccount(accountName: string) {
     'IT',
     'GridDynamics',
     'Engineering Management',
-    'Corporate Delivery Bench',
     'Delivery Management',
     'GridU Trainings',
   ];
@@ -34,7 +33,7 @@ function getPriority(projects: string[]): IEmployee['priority'] {
   // projectFullName format: '<accountName>/<projectname>'
   projects.forEach((projectFullName: string) => {
     let accountPriority: EViewPriority = EViewPriority.CustomerProject;
-    const accountName = projectFullName.replace(/\/$/, '');
+    const accountName = projectFullName.replace(/\/.*$/, '');
 
     if (isBenchAccount(accountName)) {
       accountPriority = EViewPriority.Bench;
