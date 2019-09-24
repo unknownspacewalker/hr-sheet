@@ -11,14 +11,15 @@ import createFromEmployee from './utils/createFromEmployee';
 import reduceToMapByDeveloperId from './utils/reduceToMapByDeveloperId';
 import comparePriorityAsc from './utils/comparePriorityAsc';
 import parseRowData from './utils/parseRowData';
+import locker from './utils/locker';
 
 dotenv.config();
 
-const { SHEET_ID, PAGE_NAME } = process.env;
+const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
 
 
 class Google {
-  fetchCurrentData = async ():Promise<string[][]> => {
+  fetchCurrentData = async (): Promise<string[][]> => {
     const resolvedClient = await client;
 
     const sheets = google.sheets('v4');
@@ -61,14 +62,20 @@ class Google {
   });
 
   sync = async (employees: IEmployee[]) => {
-    const sheetData = await this.fetchSheetData();
+    const unlock = await locker(SHEET_ID, Number(PAGE_ID));
 
-    this.writeSheet({
-      rows: employees
-        .map(createFromEmployee)
-        .map(populateByMap(reduceToMapByDeveloperId(sheetData.rows)))
-        .sort(comparePriorityAsc),
-    });
+    try {
+      const sheetData = await this.fetchSheetData();
+
+      this.writeSheet({
+        rows: employees
+          .map(createFromEmployee)
+          .map(populateByMap(reduceToMapByDeveloperId(sheetData.rows)))
+          .sort(comparePriorityAsc),
+      });
+    } finally {
+      await unlock();
+    }
   };
 }
 
