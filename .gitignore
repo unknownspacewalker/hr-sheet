@@ -67,6 +67,8 @@ google-key.json
 # next.js build output
 .next
 
+# compiled files
 dist/
 
+# idea IDE files
 .idea/
