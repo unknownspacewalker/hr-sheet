@@ -1,4 +1,4 @@
-import IEvent from '../sheet/IEvent';
+import IEvent from '../interfaces/IEvent';
 import { setDate, setMonth, setYear } from 'date-fns';
 
 const parseEvent = (event: string): IEvent => {

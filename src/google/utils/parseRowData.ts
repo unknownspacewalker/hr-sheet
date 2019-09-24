@@ -1,4 +1,4 @@
-import ISheetRowData from '../sheet/ISheetRowData';
+import ISheetRowData from '../interfaces/ISheetRowData';
 import parsePriority from './parsePriority';
 import parseEvent from './parseEvent';
 import notEmpty from './notEmpty';

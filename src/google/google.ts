@@ -2,7 +2,7 @@ import { google } from 'googleapis';
 import dotenv from 'dotenv';
 
 import client from './auth/client';
-import ISheetData from './sheet/ISheetData';
+import ISheetData from './interfaces/ISheetData';
 import formatRowData from './utils/formatRowData';
 import notService from './utils/notService';
 import IEmployee from '../interfaces/IEmployee';
@@ -60,7 +60,7 @@ class Google {
     rows: (await this.fetchCurrentData()).filter(notService).map(parseRowData),
   });
 
-  do = async (employees: IEmployee[]) => {
+  sync = async (employees: IEmployee[]) => {
     const sheetData = await this.fetchSheetData();
 
     this.writeSheet({
