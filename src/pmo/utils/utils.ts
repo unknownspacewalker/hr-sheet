@@ -15,4 +15,18 @@ function isExternalAccount(accountName: string) {
   return !isBenchAccount(accountName) && !isInternalAccount(accountName);
 }
 
-export { isBenchAccount, isExternalAccount, isInternalAccount };
+function checkEmployeeLevel(employee: IEmployee) {
+  return employee.latestGrade.level > 1;
+}
+
+function checkEmployeeSpecialization(employee: IEmployee) {
+  return employee.latestGrade.specialization === 'UI';
+}
+
+export {
+  isBenchAccount,
+  isExternalAccount,
+  isInternalAccount,
+  checkEmployeeLevel,
+  checkEmployeeSpecialization,
+};
