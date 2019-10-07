@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-function */
 import { google } from 'googleapis';
 
 import client from './auth/client';

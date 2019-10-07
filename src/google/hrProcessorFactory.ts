@@ -4,12 +4,13 @@ import CommonProcessor from './CommonProcessor';
 import IEmployee from '../interfaces/IEmployee';
 
 import ISheetRowData from './interfaces/ISheetRowData';
-import formatRowData from './utils/formatRowData';
+import createFormatRowData from './utils/createFormatRowData';
 import populateByMap from './utils/populateByMap';
 import createFromEmployee from './utils/createFromEmployee';
 import reduceToMapByDeveloperId from './utils/reduceToMapByDeveloperId';
 import comparePriorityAsc from './utils/comparePriorityAsc';
 import parseRowData from './utils/parseRowData';
+import findMaxLength from './utils/findMaxLength';
 
 const hrProcessorFactory = (wrapper: GoogleWrapper): CommonProcessor<ISheetRowData> => {
   const processor = new CommonProcessor<ISheetRowData>(wrapper);
@@ -31,8 +32,12 @@ const hrProcessorFactory = (wrapper: GoogleWrapper): CommonProcessor<ISheetRowDa
     comparePriorityAsc(value1, value2)
   );
 
-
-  processor.formatRowData = (rowData: ISheetRowData): ISheetRawRow => formatRowData(rowData);
+  processor.createFormatRowData = (sheetData: ISheetRowData[]):
+    ((rowData: ISheetRowData) => ISheetRawRow) => (
+    createFormatRowData(findMaxLength(
+      sheetData.map((value: ISheetRowData): any[] => value.PlannedInterviews),
+    ))
+  );
 
   return processor;
 };
