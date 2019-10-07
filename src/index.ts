@@ -1,12 +1,26 @@
 import ora from 'ora';
 
+import dotenv from 'dotenv';
 import PMO from './pmo';
-import Google from './google';
+import onboardingProcessorFactory from './google/onboardingProcessorFactory';
+import GoogleWrapper from './google/GoogleWrapper';
+import IEmployee from './interfaces/IEmployee';
+import { EViewPriority } from './google/interfaces/EPriority';
+// import Google from './google';
+
+dotenv.config();
+
+const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
 
 (async () => {
   try {
     const pmo = new PMO();
-    const google = new Google();
+    // const google = new Google();
+
+    // init google instance
+    const onboardingProcessor = onboardingProcessorFactory(
+      new GoogleWrapper(SHEET_ID, +PAGE_ID, PAGE_NAME),
+    );
 
     const PMOAuthSpinner = ora('Authorization in PMO')
       .start();
@@ -27,6 +41,20 @@ import Google from './google';
       PMOGetEmployeesSpinner.fail();
       throw e;
     }
+
+    // sync google raw employees
+    onboardingProcessor.sync(pmo.rawUIEngineers
+      .map((employee: IGetAllActiveResponseItem):IEmployee => ({
+        id: employee.id,
+        manager: employee.jobInfo.managerId,
+        username: employee.general.username,
+        firstName: employee.general.firstName,
+        familyName: employee.general.familyName,
+        track: employee.latestGrade.track,
+        level: employee.latestGrade.level,
+        location: employee.latestGrade.location,
+        priority: EViewPriority.Bench,
+      })));
 
     const PMOGetEmployeesProjectsSpinner = ora(
       `Fetching employees' projects [0/${pmo.rawUIEngineers.length}]`,
