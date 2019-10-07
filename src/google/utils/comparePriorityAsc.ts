@@ -6,4 +6,3 @@ const comparePriorityAsc = (
 ): number => firstData.Priority - secondData.Priority;
 
 export default comparePriorityAsc;
-
