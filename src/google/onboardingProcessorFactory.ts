@@ -4,7 +4,7 @@ import simpleProcessorFactory, { NameSheetData } from './simpleProcessorFactory'
 
 const onboardingProcessorFactory = (wrapper: GoogleWrapper): CommonProcessor<NameSheetData> => {
   let processor = simpleProcessorFactory(wrapper);
-  const onboardedEmployees: int[] = [];
+  const onboardedEmployees: number[] = [];
 
   processor.sync = new Proxy(processor.sync, {
     apply: (target, targetThis, applyArguments) => (
@@ -13,12 +13,12 @@ const onboardingProcessorFactory = (wrapper: GoogleWrapper): CommonProcessor<Nam
   });
 
   processor = new Proxy(processor, {
-    get: (target: CommonProcessor<NameSheetData>, targetProperty, reciever) => {
+    get: (target: CommonProcessor<NameSheetData>, targetProperty, receiver) => {
       if (targetProperty === 'onboardedEmployees') {
         return onboardedEmployees;
       }
 
-      return Reflect.get(target, targetProperty, reciever);
+      return Reflect.get(target, targetProperty, receiver);
     },
   });
 
