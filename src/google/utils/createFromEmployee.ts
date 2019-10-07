@@ -11,10 +11,11 @@ const createFromEmployee = (employee: IEmployee): ISheetRowData => ({
   Location: employee.location,
   Grade: concatIfNotNull('', employee.track, employee.level),
   English: false,
+  React: false,
+  Angular: false,
+  NodeJS: false,
+  Willingness: false,
   Priority: parsePriority(employee.priority),
-  OnBoarded: null,
-  Experience: [],
-  Total: 0,
   PlannedInterviews: [],
 });
 

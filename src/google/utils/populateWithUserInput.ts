@@ -6,10 +6,11 @@ const populateWithUserInput = (
 ): ISheetRowData => ({
   ...value,
   Availability: source.Availability,
-  English: source.English,
-  OnBoarded: source.OnBoarded,
-  Experience: source.Experience,
-  Total: source.Total,
+  // English: source.English,
+  // React: source.React,
+  // Angular: source.Angular,
+  // NodeJS: source.NodeJS,
+  Willingness: source.Willingness,
   PlannedInterviews: source.PlannedInterviews,
 });
 

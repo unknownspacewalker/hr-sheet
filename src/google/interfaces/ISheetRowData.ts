@@ -1,5 +1,5 @@
 import { EPriority } from './EPriority';
-import IEvent from './IEvent';
+// import IEvent from './IEvent';
 
 export default interface ISheetRowData {
   DM: string;
@@ -9,9 +9,11 @@ export default interface ISheetRowData {
   Location: string;
   Grade: string;
   English: boolean;
+  React: boolean;
+  Angular: boolean;
+  NodeJS: boolean;
+  Willingness: boolean;
   Priority: EPriority;
-  OnBoarded?: IEvent;
-  Experience: IEvent[];
-  Total: number;
-  PlannedInterviews: IEvent[];
+  /** @todo use Event */
+  PlannedInterviews: string[];
 }

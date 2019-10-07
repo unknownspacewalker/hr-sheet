@@ -1,5 +1,5 @@
-import IEvent from '../interfaces/IEvent';
 import { setDate, setMonth, setYear } from 'date-fns';
+import IEvent from '../interfaces/IEvent';
 
 const parseEvent = (event: string): IEvent => {
   const {

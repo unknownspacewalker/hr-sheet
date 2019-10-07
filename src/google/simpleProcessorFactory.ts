@@ -43,12 +43,12 @@ const simpleProcessorFactory = (wrapper: GoogleWrapper): CommonProcessor<NameShe
     value1.sheetData.length - value2.sheetData.length
   );
 
-
-  processor.formatRowData = (rowData: NameSheetData): ISheetRawRow => [
+  processor.createFormatRowData = ():
+    ((rowData: NameSheetData) => ISheetRawRow) => ((rowData: NameSheetData): ISheetRawRow => [
     rowData.DeveloperId.toString(),
     rowData.Developer,
     ...rowData.sheetData,
-  ];
+  ]);
 
   return processor;
 };

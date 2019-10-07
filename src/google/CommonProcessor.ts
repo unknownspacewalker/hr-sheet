@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-function */
 import IEmployee from '../interfaces/IEmployee';
 import GoogleWrapper from './GoogleWrapper';
 import { ISheetRaw, ISheetRawRow } from './interfaces/ISheetRaw';
@@ -13,7 +14,7 @@ class CommonProcessor<SheetDataType> {
 
   compare: (value1: SheetDataType, values2: SheetDataType) => number;
 
-  formatRowData: (rowData: SheetDataType) => ISheetRawRow;
+  createFormatRowData: (sheetData: SheetDataType[]) => ((rowData: SheetDataType) => ISheetRawRow);
 
   sync = async (employees: IEmployee[]) => (
     this.wrapper.sync(async (parameter: ISheetRaw) => {
@@ -23,7 +24,7 @@ class CommonProcessor<SheetDataType> {
         .map(this.createFromEmployee)
         .map(this.createPopulate(employeesFromSheet))
         .sort(this.compare)
-        .map(this.formatRowData);
+        .map(this.createFormatRowData(employeesFromSheet));
     })
   );
 }
