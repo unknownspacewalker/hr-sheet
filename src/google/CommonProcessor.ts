@@ -15,8 +15,8 @@ class CommonProcessor<SheetDataType> {
 
   formatRowData: (rowData: SheetDataType) => ISheetRawRow;
 
-  sync = async (employees: IEmployee[]) => {
-    await this.wrapper.sync(async (parameter: ISheetRaw) => {
+  sync = async (employees: IEmployee[]) => (
+    this.wrapper.sync(async (parameter: ISheetRaw) => {
       const employeesFromSheet = parameter.map(this.parseRowData);
 
       return employees
@@ -24,8 +24,8 @@ class CommonProcessor<SheetDataType> {
         .map(this.createPopulate(employeesFromSheet))
         .sort(this.compare)
         .map(this.formatRowData);
-    });
-  };
+    })
+  );
 }
 
 export default CommonProcessor;

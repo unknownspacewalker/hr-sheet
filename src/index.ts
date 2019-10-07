@@ -43,8 +43,8 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
     }
 
     // sync google raw employees
-    onboardingProcessor.sync(pmo.rawUIEngineers
-      .map((employee: IGetAllActiveResponseItem):IEmployee => ({
+    await onboardingProcessor.sync(pmo.rawUIEngineers
+      .map((employee: IGetAllActiveResponseItem): IEmployee => ({
         id: employee.id,
         manager: employee.jobInfo.managerId,
         username: employee.general.username,
@@ -56,28 +56,30 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
         priority: EViewPriority.Bench,
       })));
 
-    const PMOGetEmployeesProjectsSpinner = ora(
-      `Fetching employees' projects [0/${pmo.rawUIEngineers.length}]`,
-    )
-      .start();
-    try {
-      let counter = 0;
-      const incrementCounter = () => {
-        counter += 1;
-        PMOGetEmployeesProjectsSpinner.text = (
-          `Fetching employees' projects [${counter}/${pmo.rawUIEngineers.length}]`
-        );
-      };
-      await pmo.getUIEngineers(incrementCounter);
-      PMOGetEmployeesProjectsSpinner.succeed();
+    console.dir(onboardingProcessor.onboardedEmployees);
 
-      const GoogleSheetSpinner = ora('Writing to Google Sheet').start();
-      await google.sync(pmo.UIEngineers);
-      GoogleSheetSpinner.succeed();
-    } catch (e) {
-      PMOGetEmployeesProjectsSpinner.fail();
-      throw e;
-    }
+    // const PMOGetEmployeesProjectsSpinner = ora(
+    //   `Fetching employees' projects [0/${pmo.rawUIEngineers.length}]`,
+    // )
+    //   .start();
+    // try {
+    //   let counter = 0;
+    //   const incrementCounter = () => {
+    //     counter += 1;
+    //     PMOGetEmployeesProjectsSpinner.text = (
+    //       `Fetching employees' projects [${counter}/${pmo.rawUIEngineers.length}]`
+    //     );
+    //   };
+    //   await pmo.getUIEngineers(incrementCounter);
+    //   PMOGetEmployeesProjectsSpinner.succeed();
+
+    //   const GoogleSheetSpinner = ora('Writing to Google Sheet').start();
+    //   await google.sync(pmo.UIEngineers);
+    //   GoogleSheetSpinner.succeed();
+    // } catch (e) {
+    //   PMOGetEmployeesProjectsSpinner.fail();
+    //   throw e;
+    // }
   } catch (e) {
     console.log('error:', e.message);
     console.log('stack:', e.stack);

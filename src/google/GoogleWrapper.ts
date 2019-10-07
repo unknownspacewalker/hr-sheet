@@ -48,6 +48,7 @@ class GoogleWrapper {
             values: data,
           },
         ],
+        includeValuesInResponse: true,
       },
     });
   };
@@ -56,7 +57,7 @@ class GoogleWrapper {
     const unlock = await locker(this.sheetId, this.pageId);
 
     try {
-      await this.write(await process(await this.fetch()));
+      return this.write(await process(await this.fetch()));
     } finally {
       await unlock();
     }
