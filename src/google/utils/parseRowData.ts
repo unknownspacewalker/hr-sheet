@@ -1,6 +1,6 @@
 import ISheetRowData from '../interfaces/ISheetRowData';
 import parsePriority from './parsePriority';
-import parseEvent from './parseEvent';
+// import parseEvent from './parseEvent';
 import notEmpty from './notEmpty';
 
 const parseRowData = (data: string[]): ISheetRowData => {
@@ -12,9 +12,11 @@ const parseRowData = (data: string[]): ISheetRowData => {
     Location,
     Grade,
     English,
-    Priority,
-    OnBoarded,
-    Experience, ,
+    React,
+    Angular,
+    NodeJS,
+    Willingness,
+    Priority, ,
     ...PlannedInterviews
   ] = data;
 
@@ -25,15 +27,15 @@ const parseRowData = (data: string[]): ISheetRowData => {
     Developer,
     Location,
     Grade,
-    English: English === 'yes',
+    English: English.toUpperCase() === 'TRUE',
+    React: React.toUpperCase() === 'TRUE',
+    Angular: Angular.toUpperCase() === 'TRUE',
+    NodeJS: NodeJS.toUpperCase() === 'TRUE',
+    Willingness: Willingness.toUpperCase() === 'TRUE',
     Priority: parsePriority(Priority),
-    OnBoarded: OnBoarded ? parseEvent(OnBoarded) : null,
-    Experience: Experience.length
-      ? Experience.split(/\r?\n/).map(parseEvent)
-      : [],
-    Total: PlannedInterviews.length,
     PlannedInterviews: PlannedInterviews.length
-      ? PlannedInterviews.filter(notEmpty).map(parseEvent)
+      /** @todo parse event */
+      ? PlannedInterviews.filter(notEmpty)// .map(parseEvent)
       : [],
   };
 };
