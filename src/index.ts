@@ -57,21 +57,21 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
     // sync google raw employees
     await onboardingProcessor.sync(
       pmo.employees.filter(
-        (employee:IEmployee) => (
+        (employee: IEmployee) => (
           employee.specialization === 'UI' && employee.track === 'T' && employee.level >= 2
         ),
       ),
     );
     await t4Processor.sync(
       pmo.employees.filter(
-        (employee:IEmployee) => (
+        (employee: IEmployee) => (
           employee.specialization === 'UI' && employee.level === 4 && employee.track === 'T'
         ),
       ),
     );
     await hrOnboardingProcessor.sync(
       pmo.employees.filter(
-        (employee:IEmployee) => employee.specialization === 'HR',
+        (employee: IEmployee) => employee.track === 'H',
       ),
     );
 
@@ -91,7 +91,7 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
       await hrProcessor.sync(
         await pmo.populate(
           pmo.employees.filter(
-            (employee:IEmployee) => (
+            (employee: IEmployee) => (
               onboardingProcessor.onboardedEmployees.includes(employee.id)
             ),
           ),
