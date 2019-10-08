@@ -1,4 +1,4 @@
-import ISheetRowData from '../interfaces/ISheetRowData';
+import ISheetRowData from './ISheetRowData';
 import populateWithUserInput from './populateWithUserInput';
 
 const populateByMap = (
