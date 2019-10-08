@@ -41,7 +41,7 @@ const onboardingProcessorFactory = (wrapper: GoogleWrapper): OnboardingProcessor
     },
   });
 
-  return Object.assign(processor);
+  return processor as OnboardingProcessor;
 };
 
 export default onboardingProcessorFactory;

@@ -1,7 +1,7 @@
-import ISheetRowData from '../interfaces/ISheetRowData';
-import parsePriority from './parsePriority';
+import ISheetRowData from './ISheetRowData';
+import parsePriority from '../utils/parsePriority';
 // import parseEvent from './parseEvent';
-import notEmpty from './notEmpty';
+import notEmpty from '../utils/notEmpty';
 
 const parseRowData = (data: string[]): ISheetRowData => {
   const [
