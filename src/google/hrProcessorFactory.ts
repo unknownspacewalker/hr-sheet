@@ -34,10 +34,37 @@ const hrProcessorFactory = (wrapper: GoogleWrapper): CommonProcessor<ISheetRowDa
 
   processor.createFormatRowData = (sheetData: ISheetRowData[]):
     ((rowData: ISheetRowData) => ISheetRawRow) => (
-    createFormatRowData(findMaxLength(
-      sheetData.map((value: ISheetRowData): any[] => value.PlannedInterviews),
-    ))
+    createFormatRowData(
+      sheetData.length > 0
+        ? findMaxLength(sheetData.map((value: ISheetRowData): any[] => value.PlannedInterviews))
+        : 0,
+    )
   );
+
+  processor.sync = new Proxy(processor.sync, {
+    apply: (target, targetThis, applyArguments) => {
+      const [employees]: [IEmployee[]] = applyArguments;
+      const result = Reflect.apply(target, targetThis, applyArguments);
+      result.then((syncResult: any) => {
+        processor.wrapper.setValidation({
+          startColumnIndex: 6,
+          endColumnIndex: 11,
+          startRowIndex: 1,
+          endRowIndex: employees.length + 1,
+        },
+        {
+          condition: {
+            type: 'BOOLEAN',
+            values: [],
+          },
+        });
+        return syncResult;
+      });
+
+
+      return result;
+    },
+  });
 
   return processor;
 };
