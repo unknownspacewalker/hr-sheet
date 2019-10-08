@@ -5,7 +5,8 @@ import PMO from './pmo';
 import onboardingProcessorFactory from './google/onboardingProcessorFactory';
 import GoogleWrapper from './google/GoogleWrapper';
 import IEmployee from './interfaces/IEmployee';
-import { EViewPriority } from './google/interfaces/EPriority';
+import simpleProcessorFactory from './google/simpleProcessorFactory';
+import hrProcessorFactory from './google/hrProcessorFactory';
 
 // import Google from './google';
 
@@ -20,8 +21,18 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
 
     // init google instance
     const onboardingProcessor = onboardingProcessorFactory(
-      new GoogleWrapper(SHEET_ID, +PAGE_ID, PAGE_NAME),
+      new GoogleWrapper(SHEET_ID, 1542451477, 'Onboarding'),
     );
+    const t4Processor = simpleProcessorFactory(
+      new GoogleWrapper(SHEET_ID, 1382120156, 'T4 On Duty'),
+    );
+    const hrOnboardingProcessor = simpleProcessorFactory(
+      new GoogleWrapper(SHEET_ID, 1139652961, 'Onboarding HR'),
+    );
+    const hrProcessor = hrProcessorFactory(
+      new GoogleWrapper(SHEET_ID, 1147830334, 'HR'),
+    );
+
 
     const PMOAuthSpinner = ora('Authorization in PMO')
       .start();
@@ -44,43 +55,59 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
     }
 
     // sync google raw employees
-    await onboardingProcessor.sync(pmo.rawUIEngineers
-      .map((employee: IGetAllActiveResponseItem): IEmployee => ({
-        id: employee.id,
-        manager: employee.jobInfo.managerId,
-        username: employee.general.username,
-        firstName: employee.general.firstName,
-        familyName: employee.general.familyName,
-        track: employee.latestGrade.track,
-        level: employee.latestGrade.level,
-        location: employee.latestGrade.location,
-        priority: EViewPriority.Bench,
-      })));
+    await onboardingProcessor.sync(
+      pmo.employees.filter(
+        (employee:IEmployee) => (
+          employee.specialization === 'UI' && employee.track === 'T' && employee.level >= 2
+        ),
+      ),
+    );
+    await t4Processor.sync(
+      pmo.employees.filter(
+        (employee:IEmployee) => (
+          employee.specialization === 'UI' && employee.level === 4 && employee.track === 'T'
+        ),
+      ),
+    );
+    await hrOnboardingProcessor.sync(
+      pmo.employees.filter(
+        (employee:IEmployee) => employee.specialization === 'HR',
+      ),
+    );
 
-    console.dir(onboardingProcessor.onboardedEmployees);
 
-    // const PMOGetEmployeesProjectsSpinner = ora(
-    //   `Fetching employees' projects [0/${pmo.rawUIEngineers.length}]`,
-    // )
-    //   .start();
-    // try {
-    //   let counter = 0;
-    //   const incrementCounter = () => {
-    //     counter += 1;
-    //     PMOGetEmployeesProjectsSpinner.text = (
-    //       `Fetching employees' projects [${counter}/${pmo.rawUIEngineers.length}]`
-    //     );
-    //   };
-    //   await pmo.getUIEngineers(incrementCounter);
-    //   PMOGetEmployeesProjectsSpinner.succeed();
+    const PMOGetEmployeesProjectsSpinner = ora(
+      `Fetching employees' projects [0/${pmo.rawUIEngineers.length}]`,
+    )
+      .start();
+    try {
+      let counter = 0;
+      const incrementCounter = () => {
+        counter += 1;
+        PMOGetEmployeesProjectsSpinner.text = (
+          `Fetching employees' projects [${counter}/${pmo.rawUIEngineers.length}]`
+        );
+      };
+      await hrProcessor.sync(
+        await pmo.populate(
+          pmo.employees.filter(
+            (employee:IEmployee) => (
+              onboardingProcessor.onboardedEmployees.includes(employee.id)
+            ),
+          ),
+          incrementCounter,
+        ),
+      );
+      // await pmo.getUIEngineers(incrementCounter);
+      PMOGetEmployeesProjectsSpinner.succeed();
 
-    //   const GoogleSheetSpinner = ora('Writing to Google Sheet').start();
-    //   await google.sync(pmo.UIEngineers);
-    //   GoogleSheetSpinner.succeed();
-    // } catch (e) {
-    //   PMOGetEmployeesProjectsSpinner.fail();
-    //   throw e;
-    // }
+      const GoogleSheetSpinner = ora('Writing to Google Sheet').start();
+      // await google.sync(pmo.UIEngineers);
+      GoogleSheetSpinner.succeed();
+    } catch (e) {
+      PMOGetEmployeesProjectsSpinner.fail();
+      throw e;
+    }
   } catch (e) {
     console.log('error:', e.message);
     console.log('stack:', e.stack);

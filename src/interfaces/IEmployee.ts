@@ -1,4 +1,4 @@
-import { EViewPriority } from "../google/interfaces/EPriority";
+import { EViewPriority } from '../google/interfaces/EPriority';
 
 export default interface IEmployee {
   readonly id: number;
@@ -10,4 +10,5 @@ export default interface IEmployee {
   readonly level: number;
   readonly location: string | null;
   readonly priority: EViewPriority;
+  readonly specialization: string;
 }
