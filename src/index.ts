@@ -12,7 +12,17 @@ import hrProcessorFactory from './google/hrProcessorFactory';
 
 dotenv.config();
 
-const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
+const {
+  SHEET_ID,
+  T4_PAGE_ID,
+  T4_PAGE_NAME,
+  ONBOARDING_PAGE_ID,
+  ONBOARDING_PAGE_NAME,
+  ONBOARDING_HR_PAGE_ID,
+  ONBOARDING_HR_PAGE_NAME,
+  HR_PAGE_ID,
+  HR_PAGE_NAME,
+} = process.env;
 
 (async () => {
   try {
@@ -21,16 +31,16 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
 
     // init google instance
     const onboardingProcessor = onboardingProcessorFactory(
-      new GoogleWrapper(SHEET_ID, 1542451477, 'Onboarding'),
+      new GoogleWrapper(SHEET_ID, Number(ONBOARDING_PAGE_ID), ONBOARDING_PAGE_NAME),
     );
     const t4Processor = simpleProcessorFactory(
-      new GoogleWrapper(SHEET_ID, 1382120156, 'T4 On Duty'),
+      new GoogleWrapper(SHEET_ID, Number(T4_PAGE_ID), T4_PAGE_NAME),
     );
     const hrOnboardingProcessor = simpleProcessorFactory(
-      new GoogleWrapper(SHEET_ID, 1139652961, 'Onboarding HR'),
+      new GoogleWrapper(SHEET_ID, Number(ONBOARDING_HR_PAGE_ID), ONBOARDING_HR_PAGE_NAME),
     );
     const hrProcessor = hrProcessorFactory(
-      new GoogleWrapper(SHEET_ID, 1147830334, 'HR'),
+      new GoogleWrapper(SHEET_ID, Number(HR_PAGE_ID), HR_PAGE_NAME),
     );
 
 
