@@ -1,5 +1,5 @@
 /* eslint-disable no-empty-function */
-import { google } from 'googleapis';
+import { google, sheets_v4 as sheetsV4 } from 'googleapis';
 
 import client from './auth/client';
 import locker from './utils/locker';
@@ -50,6 +50,28 @@ class GoogleWrapper {
           },
         ],
         includeValuesInResponse: true,
+      },
+    });
+  };
+
+  setValidation = async (
+    range: sheetsV4.Schema$GridRange,
+    rule: sheetsV4.Schema$DataValidationRule,
+  ) => {
+    const sheets = google.sheets('v4');
+    return sheets.spreadsheets.batchUpdate({
+      auth: await client,
+      spreadsheetId: this.sheetId,
+      requestBody: {
+        requests: [{
+          setDataValidation: {
+            range: {
+              sheetId: this.pageId,
+              ...range,
+            },
+            rule: { ...rule },
+          },
+        }],
       },
     });
   };
