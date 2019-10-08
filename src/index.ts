@@ -77,7 +77,7 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
 
 
     const PMOGetEmployeesProjectsSpinner = ora(
-      `Fetching employees' projects [0/${pmo.rawUIEngineers.length}]`,
+      `Fetching employees' projects [0/${onboardingProcessor.onboardedEmployees.length}]`,
     )
       .start();
     try {
@@ -85,7 +85,7 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
       const incrementCounter = () => {
         counter += 1;
         PMOGetEmployeesProjectsSpinner.text = (
-          `Fetching employees' projects [${counter}/${pmo.rawUIEngineers.length}]`
+          `Fetching employees' projects [${counter}/${onboardingProcessor.onboardedEmployees.length}]`
         );
       };
       await hrProcessor.sync(
