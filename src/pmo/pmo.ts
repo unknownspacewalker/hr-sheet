@@ -55,16 +55,18 @@ class PMO {
   populate = async function (employees:IEmployee[], callback: () => void) {
     return promiseAllWithBandWidth(
       employees
-        .map((employee: IEmployee): (() => Promise<IEmployee>) => async () => ({
-          ...employee,
-          priority: getPriority(
-            await getEmployeeProjects(
-              employee.username,
-              this.jsessionid,
-              callback,
+        .map((employee: IEmployee): (() => Promise<IEmployee>) => (
+          async () => ({
+            ...employee,
+            priority: getPriority(
+              await getEmployeeProjects(
+                employee.username,
+                this.jsessionid,
+                callback,
+              ),
             ),
-          ),
-        })),
+          })
+        )),
     );
   };
 }
