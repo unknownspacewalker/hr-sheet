@@ -4,7 +4,7 @@ import GoogleWrapper from './GoogleWrapper';
 import { ISheetRaw, ISheetRawRow } from './interfaces/ISheetRaw';
 
 class CommonProcessor<SheetDataType> {
-  constructor(private wrapper: GoogleWrapper) { }
+  constructor(public wrapper: GoogleWrapper) { }
 
   parseRowData: (rowData: ISheetRawRow) => SheetDataType;
 

@@ -2,7 +2,7 @@ import ora from 'ora';
 
 import dotenv from 'dotenv';
 import PMO from './pmo';
-import onboardingProcessorFactory from './google/onboardingProcessorFactory';
+import hrProcessorFactory from './google/hrProcessorFactory';
 import GoogleWrapper from './google/GoogleWrapper';
 import IEmployee from './interfaces/IEmployee';
 import { EViewPriority } from './google/interfaces/EPriority';
@@ -19,7 +19,7 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
     // const google = new Google();
 
     // init google instance
-    const onboardingProcessor = onboardingProcessorFactory(
+    const onboardingProcessor = hrProcessorFactory(
       new GoogleWrapper(SHEET_ID, +PAGE_ID, PAGE_NAME),
     );
 
@@ -57,7 +57,7 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
         priority: EViewPriority.Bench,
       })));
 
-    console.dir(onboardingProcessor.onboardedEmployees);
+    // console.dir(onboardingProcessor.onboardedEmployees);
 
     // const PMOGetEmployeesProjectsSpinner = ora(
     //   `Fetching employees' projects [0/${pmo.rawUIEngineers.length}]`,
