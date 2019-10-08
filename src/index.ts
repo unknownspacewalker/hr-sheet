@@ -54,26 +54,51 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
       throw e;
     }
 
-    // sync google raw employees
-    await onboardingProcessor.sync(
-      pmo.employees.filter(
-        (employee: IEmployee) => (
-          employee.specialization === 'UI' && employee.track === 'T' && employee.level >= 2
+    const onboardingSheetSpinner = ora('Sync Onboarding page')
+      .start();
+    try {
+      await onboardingProcessor.sync(
+        pmo.employees.filter(
+          (employee: IEmployee) => (
+            employee.specialization === 'UI' && employee.track === 'T' && employee.level >= 2
+          ),
         ),
-      ),
-    );
-    await t4Processor.sync(
-      pmo.employees.filter(
-        (employee: IEmployee) => (
-          employee.specialization === 'UI' && employee.level === 4 && employee.track === 'T'
+      );
+      onboardingSheetSpinner.succeed();
+    } catch (e) {
+      onboardingSheetSpinner.fail();
+      throw e;
+    }
+
+    const t4SheetSpinner = ora('Sync T4 On Duty page')
+      .start();
+    try {
+      await t4Processor.sync(
+        pmo.employees.filter(
+          (employee: IEmployee) => (
+            employee.specialization === 'UI' && employee.level === 4 && employee.track === 'T'
+          ),
         ),
-      ),
-    );
-    await hrOnboardingProcessor.sync(
-      pmo.employees.filter(
-        (employee: IEmployee) => employee.track === 'H',
-      ),
-    );
+      );
+      t4SheetSpinner.succeed();
+    } catch (e) {
+      t4SheetSpinner.fail();
+      throw e;
+    }
+
+    const hrOnboardingSheetSpinner = ora('Sync HR Onboarding page')
+      .start();
+    try {
+      await hrOnboardingProcessor.sync(
+        pmo.employees.filter(
+          (employee: IEmployee) => employee.track === 'H',
+        ),
+      );
+      hrOnboardingSheetSpinner.succeed();
+    } catch (e) {
+      hrOnboardingSheetSpinner.fail();
+      throw e;
+    }
 
     const onboardedEmployees = pmo.employees.filter((employee: IEmployee) => (
       onboardingProcessor.onboardedEmployees.includes(employee.id)
@@ -83,6 +108,8 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
       `Fetching employees' projects [0/${onboardedEmployees.length}]`,
     )
       .start();
+
+    let hrEmployees = [];
     try {
       let counter = 0;
       const incrementCounter = () => {
@@ -91,24 +118,27 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
           `Fetching employees' projects [${counter}/${onboardedEmployees.length}]`
         );
       };
-      await hrProcessor.sync(
-        await pmo.populate(
-          pmo.employees.filter(
-            (employee: IEmployee) => (
-              onboardingProcessor.onboardedEmployees.includes(employee.id)
-            ),
-          ),
-          incrementCounter,
-        ),
-      );
-      // await pmo.getUIEngineers(incrementCounter);
-      PMOGetEmployeesProjectsSpinner.succeed();
 
-      const GoogleSheetSpinner = ora('Writing to Google Sheet').start();
-      // await google.sync(pmo.UIEngineers);
-      GoogleSheetSpinner.succeed();
+      hrEmployees = await pmo.populate(
+        pmo.employees.filter(
+          (employee: IEmployee) => (
+            onboardingProcessor.onboardedEmployees.includes(employee.id)
+          ),
+        ),
+        incrementCounter,
+      );
+      PMOGetEmployeesProjectsSpinner.succeed();
     } catch (e) {
       PMOGetEmployeesProjectsSpinner.fail();
+      throw e;
+    }
+
+    const hrSheetSpinner = ora('Sync HR page').start();
+    try {
+      await hrProcessor.sync(hrEmployees);
+      hrSheetSpinner.succeed();
+    } catch (e) {
+      hrSheetSpinner.fail();
       throw e;
     }
   } catch (e) {
