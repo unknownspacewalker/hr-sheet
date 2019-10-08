@@ -5,7 +5,7 @@ const comparePriorityAsc = (
   secondData: ISheetRowData,
 ): number => (
   (firstData.Priority - secondData.Priority)
-    || (Number(firstData.Willingness) - Number(secondData.Willingness))
+    || (Number(secondData.Willingness) - Number(firstData.Willingness))
 );
 
 export default comparePriorityAsc;
