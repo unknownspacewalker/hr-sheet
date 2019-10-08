@@ -4,6 +4,7 @@ import getEmployeeProjects from './api/employees/getEmployeeProjects';
 import getPriority from './utils/getPriority';
 import promiseAllWithBandWidth from './utils/promiseAllWithBandWidth';
 import IEmployee from '../interfaces/IEmployee';
+import { EViewPriority } from '../google/interfaces/EPriority';
 
 type Props = {
   specialization?: 'UI' | 'HR'
@@ -15,6 +16,8 @@ class PMO {
   jsessionid: string;
 
   rawUIEngineers: IGetAllActiveResponse;
+
+  employees: IEmployee[];
 
   UIEngineers: IEmployee[];
 
@@ -31,30 +34,32 @@ class PMO {
 
   getActiveUIEmployees = async function () {
     const rawEmployees = await getAllActive(this.jsessionid);
-    this.rawUIEngineers = rawEmployees
-      .filter((employee) => employee.latestGrade.specialization === this.specialization)
-      .slice(0, 25);
+    this.employees = rawEmployees.map((employee: IGetAllActiveResponseItem): IEmployee => ({
+      id: employee.id,
+      manager: employee.jobInfo.managerId,
+      username: employee.general.username,
+      firstName: employee.general.firstName,
+      familyName: employee.general.familyName,
+      track: employee.latestGrade.track,
+      level: employee.latestGrade.level,
+      location: employee.latestGrade.location,
+      priority: EViewPriority.Bench,
+      specialization: employee.latestGrade.specialization,
+    }));
   };
 
   getAccountType = async function () {
     console.log('get account types');
   };
 
-  getUIEngineers = async function (callback: () => void) {
-    this.UIEngineers = await promiseAllWithBandWidth(
-      this.rawUIEngineers
-        .map((employee: IGetAllActiveResponseItem): (() => Promise<IEmployee>) => async () => ({
-          id: employee.id,
-          manager: employee.jobInfo.managerId,
-          username: employee.general.username,
-          firstName: employee.general.firstName,
-          familyName: employee.general.familyName,
-          track: employee.latestGrade.track,
-          level: employee.latestGrade.level,
-          location: employee.latestGrade.location,
+  populate = async function (employees:IEmployee[], callback: () => void) {
+    return promiseAllWithBandWidth(
+      employees
+        .map((employee: IEmployee): (() => Promise<IEmployee>) => async () => ({
+          ...employee,
           priority: getPriority(
             await getEmployeeProjects(
-              employee.general.username,
+              employee.username,
               this.jsessionid,
               callback,
             ),
