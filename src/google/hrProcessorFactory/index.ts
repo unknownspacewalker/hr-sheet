@@ -8,7 +8,7 @@ import createFormatRowData from './createFormatRowData';
 import populateByMap from './populateByMap';
 import createFromEmployee from './createFromEmployee';
 import reduceToMapByDeveloperId from '../utils/reduceToMapByDeveloperId';
-import comparePriorityAsc from './comparePriorityAsc';
+import comparePriorityAsc from './compareSheetRowData';
 import parseRowData from './parseRowData';
 import findMaxLength from '../utils/findMaxLength';
 
