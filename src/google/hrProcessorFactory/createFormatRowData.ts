@@ -1,5 +1,5 @@
-import ISheetRowData from '../interfaces/ISheetRowData';
-import formatPriority from './formatPriority';
+import ISheetRowData from './ISheetRowData';
+import formatPriority from '../utils/formatPriority';
 /** @todo parse event */
 // import formatEvent from './formatEvent';
 import { ISheetRawRow } from '../interfaces/ISheetRaw';
