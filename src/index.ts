@@ -75,9 +75,12 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
       ),
     );
 
+    const onboardedEmployees = pmo.employees.filter((employee: IEmployee) => (
+      onboardingProcessor.onboardedEmployees.includes(employee.id)
+    ));
 
     const PMOGetEmployeesProjectsSpinner = ora(
-      `Fetching employees' projects [0/${onboardingProcessor.onboardedEmployees.length}]`,
+      `Fetching employees' projects [0/${onboardedEmployees.length}]`,
     )
       .start();
     try {
@@ -85,7 +88,7 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
       const incrementCounter = () => {
         counter += 1;
         PMOGetEmployeesProjectsSpinner.text = (
-          `Fetching employees' projects [${counter}/${onboardingProcessor.onboardedEmployees.length}]`
+          `Fetching employees' projects [${counter}/${onboardedEmployees.length}]`
         );
       };
       await hrProcessor.sync(
