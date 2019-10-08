@@ -76,7 +76,7 @@ const { SHEET_ID, PAGE_ID, PAGE_NAME } = process.env;
       await t4Processor.sync(
         pmo.employees.filter(
           (employee: IEmployee) => (
-            employee.specialization === 'UI' && employee.level === 4 && employee.track === 'T'
+            employee.specialization === 'UI' && employee.level >= 4 && employee.track === 'T'
           ),
         ),
       );
