@@ -1,3 +1,4 @@
+import { parse, isAfter, subMonths } from 'date-fns';
 import signIn from './api/auth/signIn';
 import getAllActive from './api/employees/getAllActive';
 import getEmployeeProjects from './api/employees/getEmployeeProjects';
@@ -33,7 +34,13 @@ class PMO {
   };
 
   getActiveUIEmployees = async function () {
-    const rawEmployees = await getAllActive(this.jsessionid);
+    let rawEmployees = await getAllActive(this.jsessionid);
+
+    rawEmployees = rawEmployees.filter((employee: IGetAllActiveResponseItem) => !isAfter(
+      parse(employee.jobInfo.hiringDate, 'yyyy-MM-dd', new Date()),
+      subMonths(new Date(), 3),
+    ));
+
     this.employees = rawEmployees.map((employee: IGetAllActiveResponseItem): IEmployee => ({
       id: employee.id,
       manager: employee.jobInfo.managerId,
@@ -52,7 +59,7 @@ class PMO {
     console.log('get account types');
   };
 
-  populate = async function (employees:IEmployee[], callback: () => void) {
+  populate = async function (employees: IEmployee[], callback: () => void) {
     return promiseAllWithBandWidth(
       employees
         .map((employee: IEmployee): (() => Promise<IEmployee>) => (
