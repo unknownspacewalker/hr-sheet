@@ -6,6 +6,7 @@ const comparePriorityAsc = (
 ): number => (
   (firstData.Priority - secondData.Priority)
     || (Number(secondData.Willingness) - Number(firstData.Willingness))
+    || (firstData.PlannedInterviews.length - secondData.PlannedInterviews.length)
 );
 
 export default comparePriorityAsc;
