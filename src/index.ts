@@ -113,7 +113,9 @@ const {
     const onboardedEmployees = pmo.employees.filter((employee: IEmployee) => (
       onboardingProcessor.onboardedEmployees.includes(employee.id)
     ));
-
+    if (onboardedEmployees.length === 0) {
+      return;
+    }
     const PMOGetEmployeesProjectsSpinner = ora(
       `Fetching employees' projects [0/${onboardedEmployees.length}]`,
     )
