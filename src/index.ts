@@ -68,11 +68,13 @@ const {
       .start();
     try {
       await onboardingProcessor.sync(
-        pmo.employees.filter(
-          (employee: IEmployee) => (
-            (employee.specialization === 'UI' || employee.specialization === 'Full stack') && employee.track === 'T' && employee.level >= 2
-          ),
-        ),
+        pmo.employees
+          .filter(
+            (employee: IEmployee) => (
+              (employee.specialization === 'UI' || employee.specialization === 'Full stack') && employee.track === 'T' && employee.level >= 2
+            ),
+          )
+          .filter(pmo.filterTrial),
       );
       onboardingSheetSpinner.succeed();
     } catch (e) {
