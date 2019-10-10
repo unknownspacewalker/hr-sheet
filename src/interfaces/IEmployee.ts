@@ -11,4 +11,5 @@ export default interface IEmployee {
   readonly location: string | null;
   readonly priority: EViewPriority;
   readonly specialization: string;
+  readonly hiringDate: Date;
 }
