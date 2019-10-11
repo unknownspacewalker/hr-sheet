@@ -52,6 +52,7 @@ class PMO {
       location: employee.latestGrade.location,
       priority: EViewPriority.Bench,
       specialization: employee.latestGrade.specialization,
+      skills: {},
     }));
   };
 
