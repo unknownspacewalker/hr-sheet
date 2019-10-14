@@ -14,4 +14,5 @@ export default interface IEmployee {
   readonly skills: {
     [id: string]: string;
   }
+  readonly hiringDate: Date;
 }
