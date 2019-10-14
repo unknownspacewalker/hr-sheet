@@ -25,7 +25,6 @@ function signIn(): Promise<string> {
 
       res.on('end', () => {
         const body = Buffer.concat(chunks);
-        console.log('sign in status:', res.statusCode);
         resolve(JSON.parse(body.toString()).accessToken);
       });
 

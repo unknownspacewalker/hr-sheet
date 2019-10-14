@@ -22,8 +22,6 @@ class Skilltree {
 
   skills: { [skillName: string]: number };
 
-  skilledEmployeesMap: Acc;
-
   constructor() {
     this.skills = {
       ReactJS: 222920465,
@@ -57,10 +55,12 @@ class Skilltree {
         acc[curr.user_id].skills[curr.skills[0].name] = Boolean(curr.skills[0].declared_level);
         return acc;
       }, {});
-    this.skilledEmployeesMap = skilledEmployeesMap;
+    return skilledEmployeesMap;
   };
 
-  populate = (employees: IEmployee[]): IEmployee[] => {
+  populate = async (employees: IEmployee[]): Promise<IEmployee[]> => {
+    const skilledEmployeesMap = await this.searchForSkilledEmployees();
+
     const copy = Object.assign(employees);
     return copy.map((emp: IEmployee) => {
       const skills = {
@@ -72,7 +72,7 @@ class Skilltree {
       try {
         Object.assign(
           skills,
-          this.skilledEmployeesMap[emp.username].skills,
+          skilledEmployeesMap[emp.username].skills,
         );
       } catch (e) {
         // do nothing

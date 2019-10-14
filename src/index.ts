@@ -7,6 +7,7 @@ import GoogleWrapper from './google/GoogleWrapper';
 import IEmployee from './interfaces/IEmployee';
 import simpleProcessorFactory from './google/simpleProcessorFactory';
 import hrProcessorFactory from './google/hrProcessorFactory';
+import Skilltree from './skilltree';
 
 // import Google from './google';
 
@@ -141,9 +142,27 @@ const {
         ),
         incrementCounter,
       );
+      // populate with skills
       PMOGetEmployeesProjectsSpinner.succeed();
     } catch (e) {
       PMOGetEmployeesProjectsSpinner.fail();
+      throw e;
+    }
+
+
+    const skillsSpinner = ora(
+      'Populating with skills',
+    )
+      .start();
+
+    try {
+      const skillTree = new Skilltree();
+      await skillTree.signIn();
+      hrEmployees = await skillTree.populate(hrEmployees);
+      // populate with skills
+      skillsSpinner.succeed();
+    } catch (e) {
+      skillsSpinner.fail();
       throw e;
     }
 

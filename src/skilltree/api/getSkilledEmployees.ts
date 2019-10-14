@@ -49,7 +49,6 @@ function getSkilledEmployees(token: string, skillId: number): Promise<RawSkilled
 
       res.on('end', () => {
         const body = Buffer.concat(chunks);
-        console.log('status code:', res.statusCode);
         resolve(JSON.parse(body.toString()));
       });
 
@@ -57,12 +56,6 @@ function getSkilledEmployees(token: string, skillId: number): Promise<RawSkilled
         reject(error);
       });
     });
-
-    console.log('req body:', JSON.stringify({
-      employees: [],
-      skills: [{ id: `${skillId}` }],
-      statuses: ['DECLARED'],
-    }));
 
     req.write(JSON.stringify({
       employees: [],
