@@ -12,7 +12,7 @@ export default interface IEmployee {
   readonly priority: EViewPriority;
   readonly specialization: string;
   readonly skills: {
-    [id: string]: string;
+    [id: string]: boolean;
   }
   readonly hiringDate: Date;
 }
