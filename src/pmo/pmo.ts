@@ -34,12 +34,7 @@ class PMO {
   };
 
   getActiveUIEmployees = async function () {
-    let rawEmployees = await getAllActive(this.jsessionid);
-
-    rawEmployees = rawEmployees.filter((employee: IGetAllActiveResponseItem) => !isAfter(
-      parse(employee.jobInfo.hiringDate, 'yyyy-MM-dd', new Date()),
-      subMonths(new Date(), 3),
-    ));
+    const rawEmployees = await getAllActive(this.jsessionid);
 
     this.employees = rawEmployees.map((employee: IGetAllActiveResponseItem): IEmployee => ({
       id: employee.id,
@@ -53,8 +48,14 @@ class PMO {
       priority: EViewPriority.Bench,
       specialization: employee.latestGrade.specialization,
       skills: {},
+      hiringDate: parse(employee.jobInfo.hiringDate, 'yyyy-MM-dd', new Date()),
     }));
   };
+
+  filterTrial = (employee: IEmployee) => !isAfter(
+    employee.hiringDate,
+    subMonths(new Date(), 3),
+  );
 
   getAccountType = async function () {
     console.log('get account types');
