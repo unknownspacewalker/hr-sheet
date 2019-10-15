@@ -30,6 +30,7 @@
   "devDependencies": {
     "@types/cookie": "^0.3.3",
     "@types/dotenv": "^6.1.1",
+    "@types/jest": "^24.0.19",
     "@types/node": "^12.7.5",
     "@types/ora": "^3.2.0",
     "@typescript-eslint/eslint-plugin": "^2.3.0",
@@ -37,8 +38,10 @@
     "eslint": "^6.4.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
     "ts-node-dev": "^1.0.0-pre.42",
-    "typescript": "^3.6.3"
+    "typescript": "^3.6.4"
   },
   "dependencies": {
     "axios": "^0.19.0",
