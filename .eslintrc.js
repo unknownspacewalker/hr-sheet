@@ -25,7 +25,11 @@ module.exports = {
     "@typescript-eslint/no-useless-constructor": "error",
     'quote-props': ['error', 'consistent'],
     "semi": "off",
-    "@typescript-eslint/semi": ["error"]
+    "@typescript-eslint/semi": ["error"],
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": ["**/*.test.ts", "**/*.spec.ts"] }
+    ]
   },
   settings: {
     'import/extensions': [".js", ".ts"],
