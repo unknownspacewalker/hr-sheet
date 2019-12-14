@@ -8,6 +8,9 @@ jspm_packages
 # Webpack directories
 .webpack
 
+# linter cache
+.eslintcache
+
 # idea IDE files
 .idea/
 
