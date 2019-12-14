@@ -6,13 +6,10 @@ jspm_packages
 .serverless
 
 # Webpack directories
-.webpack\
+.webpack
 
 # idea IDE files
 .idea/
 
 # sensitive
 .env
-
-# build
-.webpack
