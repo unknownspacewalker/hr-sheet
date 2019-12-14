@@ -1,6 +1,6 @@
 import { google, sheets_v4 as sheetsV4 } from 'googleapis';
 import client from '../auth/client';
-import { when, find, propEq } from 'ramda';
+import { when, find } from 'ramda';
 
 const PMO_BOT_LOCK_PREFIX = 'Lock from pmo bot';
 
