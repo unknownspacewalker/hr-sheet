@@ -10,3 +10,9 @@ jspm_packages
 
 # idea IDE files
 .idea/
+
+# sensitive
+.env
+
+# build
+.webpack
