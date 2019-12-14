@@ -1,13 +1,17 @@
-import ISheetRowData from './ISheetRowData';
+import SheetRowDataInterface from './SheetRowDataInterface';
 import formatPriority from '../utils/formatPriority';
 /** @todo parse event */
 // import formatEvent from './formatEvent';
-import { ISheetRawRow } from '../interfaces/ISheetRaw';
+import { SheetRawRowInterface } from '../interfaces/SheetRawInterface';
 
-const createFormatRowData = (width: number): ((data: ISheetRowData) => ISheetRawRow) => {
+const createFormatRowData = (
+  width: number
+): ((data: SheetRowDataInterface) => SheetRawRowInterface) => {
   const calculatedWidth = width > 5 ? width + 1 : 6;
-  return (data: ISheetRowData): ISheetRawRow => {
-    const emptyPlannedInterviews = Array(calculatedWidth - data.PlannedInterviews.length).fill('');
+  return (data: SheetRowDataInterface): SheetRawRowInterface => {
+    const emptyPlannedInterviews = Array(
+      calculatedWidth - data.PlannedInterviews.length
+    ).fill('');
     return [
       data.DM,
       data.Availability,
@@ -23,7 +27,10 @@ const createFormatRowData = (width: number): ((data: ISheetRowData) => ISheetRaw
       data.Priority ? formatPriority(data.Priority) : '',
       '=COUNTA(OFFSET(INDIRECT("RC",FALSE),0,1,1,365))',
       /** @todo parse event */
-      ...[...emptyPlannedInterviews, ...data.PlannedInterviews/* .map(formatEvent) */],
+      ...[
+        ...emptyPlannedInterviews,
+        ...data.PlannedInterviews /* .map(formatEvent) */,
+      ],
     ];
   };
 };

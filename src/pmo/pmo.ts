@@ -4,11 +4,11 @@ import getAllActive from './api/employees/getAllActive';
 import getEmployeeProjects from './api/employees/getEmployeeProjects';
 import getPriority from './utils/getPriority';
 import promiseAllWithBandWidth from './utils/promiseAllWithBandWidth';
-import IEmployee from '../interfaces/IEmployee';
+import EmployeeInterface from '../interfaces/EmployeeInterface';
 import { EViewPriority } from '../google/interfaces/EPriority';
 
 type Props = {
-  specialization?: 'UI' | 'HR'
+  specialization?: 'UI' | 'HR';
 };
 
 class PMO {
@@ -18,9 +18,9 @@ class PMO {
 
   rawUIEngineers: IGetAllActiveResponse;
 
-  employees: IEmployee[];
+  employees: EmployeeInterface[];
 
-  UIEngineers: IEmployee[];
+  UIEngineers: EmployeeInterface[];
 
   constructor({ specialization = 'UI' }: Props = {}) {
     this.specialization = specialization;
@@ -29,53 +29,59 @@ class PMO {
     this.UIEngineers = undefined;
   }
 
-  auth = async function () {
+  auth = async function() {
     this.jsessionid = await signIn();
   };
 
-  getActiveUIEmployees = async function () {
+  getActiveUIEmployees = async function() {
     const rawEmployees = await getAllActive(this.jsessionid);
 
-    this.employees = rawEmployees.map((employee: IGetAllActiveResponseItem): IEmployee => ({
-      id: employee.id,
-      manager: employee.jobInfo.managerId,
-      username: employee.general.username,
-      firstName: employee.general.firstName,
-      familyName: employee.general.familyName,
-      track: employee.latestGrade.track,
-      level: employee.latestGrade.level,
-      location: employee.latestGrade.location,
-      priority: EViewPriority.Bench,
-      specialization: employee.latestGrade.specialization,
-      skills: {},
-      hiringDate: parse(employee.jobInfo.hiringDate, 'yyyy-MM-dd', new Date()),
-    }));
+    this.employees = rawEmployees.map(
+      (employee: GetAllActiveResponseItemInterface): EmployeeInterface => ({
+        id: employee.id,
+        manager: employee.jobInfo.managerId,
+        username: employee.general.username,
+        firstName: employee.general.firstName,
+        familyName: employee.general.familyName,
+        track: employee.latestGrade.track,
+        level: employee.latestGrade.level,
+        location: employee.latestGrade.location,
+        priority: EViewPriority.Bench,
+        specialization: employee.latestGrade.specialization,
+        skills: {},
+        hiringDate: parse(
+          employee.jobInfo.hiringDate,
+          'yyyy-MM-dd',
+          new Date()
+        ),
+      })
+    );
   };
 
-  filterTrial = (employee: IEmployee) => !isAfter(
-    employee.hiringDate,
-    subMonths(new Date(), 3),
-  );
+  filterTrial = (employee: EmployeeInterface) =>
+    !isAfter(employee.hiringDate, subMonths(new Date(), 3));
 
-  getAccountType = async function () {
+  getAccountType = async function() {
     console.log('get account types');
   };
 
-  populate = async function (employees: IEmployee[], callback: () => void) {
+  populate = async function(
+    employees: EmployeeInterface[],
+    callback: () => void
+  ) {
     return promiseAllWithBandWidth(
-      employees
-        .map((employee: IEmployee): (() => Promise<IEmployee>) => (
-          async () => ({
-            ...employee,
-            priority: getPriority(
-              await getEmployeeProjects(
-                employee.username,
-                this.jsessionid,
-                callback,
-              ),
-            ),
-          })
-        )),
+      employees.map((employee: EmployeeInterface): (() => Promise<
+        EmployeeInterface
+      >) => async () => ({
+        ...employee,
+        priority: getPriority(
+          await getEmployeeProjects(
+            employee.username,
+            this.jsessionid,
+            callback
+          )
+        ),
+      }))
     );
   };
 }

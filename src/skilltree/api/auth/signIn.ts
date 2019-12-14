@@ -8,18 +8,18 @@ dotenv.config();
 function signIn(): Promise<string> {
   return new Promise((resolve, reject) => {
     const options = {
-      'method': 'POST',
-      'hostname': 'sso.griddynamics.net',
-      'path': '/auth/token/ldap',
-      'headers': {
+      method: 'POST',
+      hostname: 'sso.griddynamics.net',
+      path: '/auth/token/ldap',
+      headers: {
         'content-type': 'application/json',
       },
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, res => {
       const chunks: Uint8Array[] = [];
 
-      res.on('data', (chunk) => {
+      res.on('data', chunk => {
         chunks.push(chunk);
       });
 
@@ -28,15 +28,17 @@ function signIn(): Promise<string> {
         resolve(JSON.parse(body.toString()).accessToken);
       });
 
-      res.on('error', (error) => {
+      res.on('error', error => {
         reject(error);
       });
     });
 
-    req.write(JSON.stringify({
-      userName: 'hr-google-sheet-sync-robot',
-      encodedPassword: 'S3lFOW55OE1KY0ZpIQ==',
-    }));
+    req.write(
+      JSON.stringify({
+        userName: 'hr-google-sheet-sync-robot',
+        encodedPassword: 'S3lFOW55OE1KY0ZpIQ==',
+      })
+    );
     req.end();
   });
 }

@@ -3,7 +3,7 @@ import { google, sheets_v4 as sheetsV4 } from 'googleapis';
 
 import client from './auth/client';
 import locker from './utils/locker';
-import { ISheetRaw } from './interfaces/ISheetRaw';
+import { SheetRawInterface } from './interfaces/SheetRawInterface';
 
 class GoogleWrapper {
   constructor(
@@ -12,18 +12,20 @@ class GoogleWrapper {
     private pageName: string,
     private pageWithHeading: boolean = true,
     private firstColumnName: string = 'A',
-    private lastColumnName: string = 'Z',
-  ) { }
+    private lastColumnName: string = 'Z'
+  ) {}
 
-  fetch = async (): Promise<ISheetRaw> => {
+  fetch = async (): Promise<SheetRawInterface> => {
     const resolvedClient = await client;
 
     const sheets = google.sheets('v4');
-    const { data: { values } } = (await sheets.spreadsheets.values.get({
+    const {
+      data: { values },
+    } = await sheets.spreadsheets.values.get({
       auth: resolvedClient,
       spreadsheetId: this.sheetId,
       range: this.createRange(),
-    }));
+    });
 
     await sheets.spreadsheets.values.batchClear({
       auth: resolvedClient,
@@ -36,7 +38,7 @@ class GoogleWrapper {
     return values || [];
   };
 
-  write = async (data: ISheetRaw) => {
+  write = async (data: SheetRawInterface) => {
     const sheets = google.sheets('v4');
     return sheets.spreadsheets.values.batchUpdate({
       auth: await client,
@@ -56,27 +58,31 @@ class GoogleWrapper {
 
   setValidation = async (
     range: sheetsV4.Schema$GridRange,
-    rule: sheetsV4.Schema$DataValidationRule,
+    rule: sheetsV4.Schema$DataValidationRule
   ) => {
     const sheets = google.sheets('v4');
     return sheets.spreadsheets.batchUpdate({
       auth: await client,
       spreadsheetId: this.sheetId,
       requestBody: {
-        requests: [{
-          setDataValidation: {
-            range: {
-              sheetId: this.pageId,
-              ...range,
+        requests: [
+          {
+            setDataValidation: {
+              range: {
+                sheetId: this.pageId,
+                ...range,
+              },
+              rule: { ...rule },
             },
-            rule: { ...rule },
           },
-        }],
+        ],
       },
     });
   };
 
-  sync = async (process: (parameter: ISheetRaw) => Promise<ISheetRaw>) => {
+  sync = async (
+    process: (parameter: SheetRawInterface) => Promise<SheetRawInterface>
+  ) => {
     const unlock = await locker(this.sheetId, this.pageId);
 
     try {
@@ -86,7 +92,10 @@ class GoogleWrapper {
     }
   };
 
-  private createRange = () => `${this.pageName}!${this.firstColumnName}${this.pageWithHeading ? 2 : 1}:${this.lastColumnName}`;
+  private createRange = () =>
+    `${this.pageName}!${this.firstColumnName}${this.pageWithHeading ? 2 : 1}:${
+      this.lastColumnName
+    }`;
 }
 
 export default GoogleWrapper;

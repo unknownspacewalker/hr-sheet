@@ -1,13 +1,9 @@
-import IEmployee from '../interfaces/IEmployee';
+import EmployeeInterface from '../interfaces/EmployeeInterface';
 import signIn from './api/auth/signIn';
-import getSkilledEmployees, { RawSkilledEmployee } from './api/getSkilledEmployees';
+import getSkilledEmployees, {
+  RawSkilledEmployee,
+} from './api/getSkilledEmployees';
 
-type Skill = {
-  'id': number;
-  'name': string;
-  'level': string;
-  'declared_level': string;
-};
 type SkilledEmployee = {
   username: string;
   skills: {
@@ -15,7 +11,6 @@ type SkilledEmployee = {
   };
 };
 type Acc = { [id: string]: SkilledEmployee };
-
 
 class Skilltree {
   token: string;
@@ -34,35 +29,45 @@ class Skilltree {
     this.token = await signIn();
   };
 
-  getSkillIds = async () => { };
-
   searchForSkilledEmployees = async () => {
-    const rawReactSkilledEmployees = await getSkilledEmployees(this.token, this.skills.ReactJS);
-    const rawAngularSkilledEmployees = await getSkilledEmployees(this.token, this.skills.Angular);
-    const rawNodejsSkilledEmployees = await getSkilledEmployees(this.token, this.skills.NodeJS);
+    const rawReactSkilledEmployees = await getSkilledEmployees(
+      this.token,
+      this.skills.ReactJS
+    );
+    const rawAngularSkilledEmployees = await getSkilledEmployees(
+      this.token,
+      this.skills.Angular
+    );
+    const rawNodejsSkilledEmployees = await getSkilledEmployees(
+      this.token,
+      this.skills.NodeJS
+    );
     const skilledEmployeesMap = [
       ...rawReactSkilledEmployees,
       ...rawAngularSkilledEmployees,
       ...rawNodejsSkilledEmployees,
-    ]
-      .reduce((acc: Acc, curr: RawSkilledEmployee): Acc => {
-        if (!acc[curr.user_id]) {
-          acc[curr.user_id] = {
-            username: curr.user_id,
-            skills: {},
-          };
-        }
-        acc[curr.user_id].skills[curr.skills[0].name] = Boolean(curr.skills[0].declared_level);
-        return acc;
-      }, {});
+    ].reduce((acc: Acc, curr: RawSkilledEmployee): Acc => {
+      if (!acc[curr.user_id]) {
+        acc[curr.user_id] = {
+          username: curr.user_id,
+          skills: {},
+        };
+      }
+      acc[curr.user_id].skills[curr.skills[0].name] = Boolean(
+        curr.skills[0].declared_level
+      );
+      return acc;
+    }, {});
     return skilledEmployeesMap;
   };
 
-  populate = async (employees: IEmployee[]): Promise<IEmployee[]> => {
+  populate = async (
+    employees: EmployeeInterface[]
+  ): Promise<EmployeeInterface[]> => {
     const skilledEmployeesMap = await this.searchForSkilledEmployees();
 
     const copy = Object.assign(employees);
-    return copy.map((emp: IEmployee) => {
+    return copy.map((emp: EmployeeInterface) => {
       const skills = {
         ReactJS: false,
         NodeJS: false,
@@ -70,10 +75,7 @@ class Skilltree {
       };
 
       try {
-        Object.assign(
-          skills,
-          skilledEmployeesMap[emp.username].skills,
-        );
+        Object.assign(skills, skilledEmployeesMap[emp.username].skills);
       } catch (e) {
         // do nothing
       }

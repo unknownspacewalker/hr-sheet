@@ -3,9 +3,9 @@ import * as fc from 'fast-check';
 
 import populateWithUserInput from '../populateWithUserInput';
 import { EPriority } from '../../interfaces/EPriority';
-import ISheetRowData from '../../interfaces/ISheetRowData';
+import SheetRowDataInterface from '../../interfaces/SheetRowDataInterface';
 
-const factoryRowDataArbitrary = () => fc.record<ISheetRowData>({
+const factoryRowDataArbitrary = () => fc.record<SheetRowDataInterface>({
   DM: fc.unicodeString(),
   Availability: fc.unicodeString(),
   DeveloperId: fc.nat(),
@@ -28,15 +28,15 @@ const factoryRowDataArbitrary = () => fc.record<ISheetRowData>({
 test('Result is made of arbitrary', () => {
   fc.assert(
     fc.property(
-      fc.tuple<ISheetRowData, ISheetRowData>(
+      fc.tuple<SheetRowDataInterface, SheetRowDataInterface>(
         factoryRowDataArbitrary(),
         factoryRowDataArbitrary(),
       ),
-      (data: [ISheetRowData, ISheetRowData]) => {
+      (data: [SheetRowDataInterface, SheetRowDataInterface]) => {
         const [arb1, arb2] = data;
 
         const result = populateWithUserInput(arb1, arb2);
-        Object.entries(result).forEach(([key, value]: [keyof ISheetRowData, any]) => {
+        Object.entries(result).forEach(([key, value]: [keyof SheetRowDataInterface, any]) => {
           expect([arb1[key], arb2[key]]).toContain(value);
         });
       },
@@ -47,11 +47,11 @@ test('Result is made of arbitrary', () => {
 test('Function is idempotent, not changes original value', () => {
   fc.assert(
     fc.property(
-      fc.tuple<ISheetRowData, ISheetRowData>(
+      fc.tuple<SheetRowDataInterface, SheetRowDataInterface>(
         factoryRowDataArbitrary(),
         factoryRowDataArbitrary(),
       ),
-      (data: [ISheetRowData, ISheetRowData]) => {
+      (data: [SheetRowDataInterface, SheetRowDataInterface]) => {
         const [arb1, arb2] = data;
         const arb1Clone = { ...arb1 };
         const arb2Clone = { ...arb2 };

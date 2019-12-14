@@ -1,13 +1,17 @@
 import GoogleWrapper from './GoogleWrapper';
 import CommonProcessor from './CommonProcessor';
-import simpleProcessorFactory, { NameSheetData } from './simpleProcessorFactory';
-import { ISheetRawRow } from './interfaces/ISheetRaw';
+import simpleProcessorFactory, {
+  NameSheetData,
+} from './simpleProcessorFactory';
+import { SheetRawRowInterface } from './interfaces/SheetRawInterface';
 
 interface OnboardingProcessor extends CommonProcessor<NameSheetData> {
   readonly onboardedEmployees: number[];
 }
 
-const onboardingProcessorFactory = (wrapper: GoogleWrapper): OnboardingProcessor => {
+const onboardingProcessorFactory = (
+  wrapper: GoogleWrapper
+): OnboardingProcessor => {
   let processor = simpleProcessorFactory(wrapper);
   let onboardedEmployees: number[] = [];
 
@@ -27,12 +31,13 @@ const onboardingProcessorFactory = (wrapper: GoogleWrapper): OnboardingProcessor
 
       result.then((response: any) => {
         onboardedEmployees = response.data.responses[0].updatedData.values.reduce(
-          (accumulator: number[], rowData: ISheetRawRow) => {
+          (accumulator: number[], rowData: SheetRawRowInterface) => {
             if (typeof rowData[2] !== 'undefined' && rowData[2].length > 0) {
               return [...accumulator, Number(rowData[0])];
             }
             return accumulator;
-          }, [],
+          },
+          []
         );
         return response;
       });

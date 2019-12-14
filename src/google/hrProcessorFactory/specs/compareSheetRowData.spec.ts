@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 import * as fc from 'fast-check';
-import compareSheetRowData, { IComparable } from '../compareSheetRowData';
+import compareSheetRowData, { ComparableInterface } from '../compareSheetRowData';
 import { EPriority } from '../../interfaces/EPriority';
 
-const factoryCompareArbitrary = () => fc.record<IComparable>({
+const factoryCompareArbitrary = () => fc.record<ComparableInterface>({
   Willingness: fc.boolean(),
   Priority: fc.oneof<EPriority>(
     fc.constant<EPriority>(EPriority.Bench),
@@ -16,11 +16,11 @@ const factoryCompareArbitrary = () => fc.record<IComparable>({
 test('Change order negotiates result', () => {
   fc.assert(
     fc.property(
-      fc.tuple<IComparable, IComparable>(
+      fc.tuple<ComparableInterface, ComparableInterface>(
         factoryCompareArbitrary(),
         factoryCompareArbitrary(),
       ),
-      (data: [IComparable, IComparable]) => {
+      (data: [ComparableInterface, ComparableInterface]) => {
         const [arb1, arb2] = data;
         expect(compareSheetRowData(arb1, arb2) + compareSheetRowData(arb2, arb1)).toBe(0);
       },
@@ -31,11 +31,11 @@ test('Change order negotiates result', () => {
 test('Function is idempotent, not changes original value', () => {
   fc.assert(
     fc.property(
-      fc.tuple<IComparable, IComparable>(
+      fc.tuple<ComparableInterface, ComparableInterface>(
         factoryCompareArbitrary(),
         factoryCompareArbitrary(),
       ),
-      (data: [IComparable, IComparable]) => {
+      (data: [ComparableInterface, ComparableInterface]) => {
         const [arb1, arb2] = data;
         const arb1Clone = { ...arb1 };
         const arb2Clone = { ...arb2 };

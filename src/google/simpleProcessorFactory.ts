@@ -1,9 +1,9 @@
 import GoogleWrapper from './GoogleWrapper';
-import { ISheetRawRow } from './interfaces/ISheetRaw';
+import { SheetRawRowInterface } from './interfaces/SheetRawInterface';
 import CommonProcessor from './CommonProcessor';
 import reduceToMapByDeveloperId from './utils/reduceToMapByDeveloperId';
 import concatIfNotNull from './utils/concatIfNotNull';
-import IEmployee from '../interfaces/IEmployee';
+import EmployeeInterface from '../interfaces/EmployeeInterface';
 
 export interface NameSheetData {
   DeveloperId: number;
@@ -11,17 +11,20 @@ export interface NameSheetData {
   sheetData: string[];
 }
 
-const simpleProcessorFactory = (wrapper: GoogleWrapper): CommonProcessor<NameSheetData> => {
+const simpleProcessorFactory = (
+  wrapper: GoogleWrapper
+): CommonProcessor<NameSheetData> => {
   const processor = new CommonProcessor<NameSheetData>(wrapper);
 
-  processor.parseRowData = (rowData: ISheetRawRow): NameSheetData => {
+  processor.parseRowData = (rowData: SheetRawRowInterface): NameSheetData => {
     const [DeveloperId, Developer, ...sheetData] = rowData;
 
     return { DeveloperId: Number(DeveloperId), Developer, sheetData };
   };
 
-  processor.createPopulate = (sheetData: NameSheetData[]):
-    ((sheetData: NameSheetData) => NameSheetData) => {
+  processor.createPopulate = (
+    sheetData: NameSheetData[]
+  ): ((sheetData: NameSheetData) => NameSheetData) => {
     const developerMap = reduceToMapByDeveloperId(sheetData);
 
     return (employee: NameSheetData): NameSheetData => {
@@ -33,22 +36,26 @@ const simpleProcessorFactory = (wrapper: GoogleWrapper): CommonProcessor<NameShe
     };
   };
 
-  processor.createFromEmployee = (employee: IEmployee): NameSheetData => ({
+  processor.createFromEmployee = (
+    employee: EmployeeInterface
+  ): NameSheetData => ({
     DeveloperId: employee.id,
     Developer: concatIfNotNull(' ', employee.firstName, employee.familyName),
     sheetData: [],
   });
 
-  processor.compare = (value1: NameSheetData, value2: NameSheetData): number => (
-    value1.sheetData.length - value2.sheetData.length
-  );
+  processor.compare = (value1: NameSheetData, value2: NameSheetData): number =>
+    value1.sheetData.length - value2.sheetData.length;
 
-  processor.createFormatRowData = ():
-    ((rowData: NameSheetData) => ISheetRawRow) => ((rowData: NameSheetData): ISheetRawRow => [
+  processor.createFormatRowData = (): ((
+    rowData: NameSheetData
+  ) => SheetRawRowInterface) => (
+    rowData: NameSheetData
+  ): SheetRawRowInterface => [
     rowData.DeveloperId.toString(),
     rowData.Developer,
     ...rowData.sheetData,
-  ]);
+  ];
 
   return processor;
 };

@@ -1,9 +1,11 @@
-import IEmployee from '../../interfaces/IEmployee';
-import ISheetRowData from './ISheetRowData';
+import EmployeeInterface from '../../interfaces/EmployeeInterface';
+import SheetRowDataInterface from './SheetRowDataInterface';
 import concatIfNotNull from '../utils/concatIfNotNull';
 import parsePriority from '../utils/parsePriority';
 
-const createFromEmployee = (employee: IEmployee): ISheetRowData => ({
+const createFromEmployee = (
+  employee: EmployeeInterface
+): SheetRowDataInterface => ({
   DM: employee.manager ? employee.manager : 'N/A',
   Availability: '',
   DeveloperId: employee.id,

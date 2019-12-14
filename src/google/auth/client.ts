@@ -1,4 +1,5 @@
-import path from 'path';
-import { fromFile } from './clientFactory';
+import { fromToken } from './clientFactory';
 
-export default fromFile(path.resolve(process.cwd(), 'google-key.json'));
+const { GOOGLE_KEY } = process.env;
+
+export default fromToken(GOOGLE_KEY);

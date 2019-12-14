@@ -1,5 +1,5 @@
 import { EViewPriority } from '../../google/interfaces/EPriority';
-import IEmployee from '../../interfaces/IEmployee';
+import EmployeeInterface from '../../interfaces/EmployeeInterface';
 
 function isBenchAccount(accountName: string) {
   return accountName === 'Corporate Delivery Bench';
@@ -28,7 +28,7 @@ function isInternalAccount(accountName: string) {
 //   return !isBenchAccount(accountName) && !isInternalAccount(accountName);
 // }
 
-function getPriority(projects: string[]): IEmployee['priority'] {
+function getPriority(projects: string[]): EmployeeInterface['priority'] {
   let currentPriority: EViewPriority = EViewPriority.Bench;
   // projectFullName format: '<accountName>/<projectname>'
   projects.forEach((projectFullName: string) => {

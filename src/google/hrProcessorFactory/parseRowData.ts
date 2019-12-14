@@ -1,9 +1,9 @@
-import ISheetRowData from './ISheetRowData';
+import SheetRowDataInterface from './SheetRowDataInterface';
 import parsePriority from '../utils/parsePriority';
 // import parseEvent from './parseEvent';
 import notEmpty from '../utils/notEmpty';
 
-const parseRowData = (data: string[]): ISheetRowData => {
+const parseRowData = (data: string[]): SheetRowDataInterface => {
   const [
     DM,
     Availability,
@@ -16,7 +16,8 @@ const parseRowData = (data: string[]): ISheetRowData => {
     Angular,
     NodeJS,
     Willingness,
-    Priority, ,
+    Priority,
+    ,
     ...PlannedInterviews
   ] = data;
 
@@ -34,8 +35,8 @@ const parseRowData = (data: string[]): ISheetRowData => {
     Willingness: Willingness.toUpperCase() === 'TRUE',
     Priority: parsePriority(Priority),
     PlannedInterviews: PlannedInterviews.length
-      /** @todo parse event */
-      ? PlannedInterviews.filter(notEmpty)// .map(parseEvent)
+      ? /** @todo parse event */
+        PlannedInterviews.filter(notEmpty) // .map(parseEvent)
       : [],
   };
 };

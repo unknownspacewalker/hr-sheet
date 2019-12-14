@@ -1,17 +1,17 @@
 function promiseAllWithBandWidth<T>(
   callbacks: (() => Promise<T>)[],
-  width: number = 5,
-):Promise<T[]> {
+  width = 5
+): Promise<T[]> {
   const length = callbacks.length < width ? callbacks.length : width;
   return new Promise((resolve, reject) => {
     let doneCount = 0;
     let next = length;
-    const results:T[] = [];
+    const results: T[] = [];
     let canceled = false;
 
     const launch = (callback: () => Promise<T>, index: number) => {
       callback()
-        .then((result) => {
+        .then(result => {
           if (canceled) {
             return;
           }
@@ -24,7 +24,7 @@ function promiseAllWithBandWidth<T>(
             resolve(results);
           }
         })
-        .catch((e) => {
+        .catch(e => {
           canceled = true;
           reject(e);
         });

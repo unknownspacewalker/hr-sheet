@@ -3,9 +3,9 @@ import * as fc from 'fast-check';
 
 import createFromEmployee from '../createFromEmployee';
 import { EViewPriority } from '../../interfaces/EPriority';
-import IEmployee from '../../../interfaces/IEmployee';
+import EmployeeInterface from '../../../interfaces/EmployeeInterface';
 
-const factoryEmployeeArbitrary = () => fc.record<IEmployee>({
+const factoryEmployeeArbitrary = () => fc.record<EmployeeInterface>({
   id: fc.nat(),
   manager: fc.option(fc.unicodeString(), 10),
   username: fc.option(fc.unicodeString(), 10),
@@ -47,7 +47,7 @@ test('Function is idempotent, not changes original value', () => {
   fc.assert(
     fc.property(
       factoryEmployeeArbitrary(),
-      (arb1: IEmployee) => {
+      (arb1: EmployeeInterface) => {
         const arb1Clone = { ...arb1 };
 
         createFromEmployee(arb1);

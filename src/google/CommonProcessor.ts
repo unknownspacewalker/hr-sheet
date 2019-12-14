@@ -1,23 +1,30 @@
 /* eslint-disable no-empty-function */
-import IEmployee from '../interfaces/IEmployee';
+import EmployeeInterface from '../interfaces/EmployeeInterface';
 import GoogleWrapper from './GoogleWrapper';
-import { ISheetRaw, ISheetRawRow } from './interfaces/ISheetRaw';
+import {
+  SheetRawInterface,
+  SheetRawRowInterface,
+} from './interfaces/SheetRawInterface';
 
 class CommonProcessor<SheetDataType> {
-  constructor(public wrapper: GoogleWrapper) { }
+  constructor(public wrapper: GoogleWrapper) {}
 
-  parseRowData: (rowData: ISheetRawRow) => SheetDataType;
+  parseRowData: (rowData: SheetRawRowInterface) => SheetDataType;
 
-  createPopulate: (sheetData: SheetDataType[]) => ((sheetData: SheetDataType) => SheetDataType);
+  createPopulate: (
+    sheetData: SheetDataType[]
+  ) => (sheetData: SheetDataType) => SheetDataType;
 
-  createFromEmployee: (employee: IEmployee) => SheetDataType;
+  createFromEmployee: (employee: EmployeeInterface) => SheetDataType;
 
   compare: (value1: SheetDataType, values2: SheetDataType) => number;
 
-  createFormatRowData: (sheetData: SheetDataType[]) => ((rowData: SheetDataType) => ISheetRawRow);
+  createFormatRowData: (
+    sheetData: SheetDataType[]
+  ) => (rowData: SheetDataType) => SheetRawRowInterface;
 
-  sync = async (employees: IEmployee[]) => (
-    this.wrapper.sync(async (parameter: ISheetRaw) => {
+  sync = async (employees: EmployeeInterface[]) =>
+    this.wrapper.sync(async (parameter: SheetRawInterface) => {
       const employeesFromSheet = parameter.map(this.parseRowData);
 
       return employees
@@ -25,8 +32,7 @@ class CommonProcessor<SheetDataType> {
         .map(this.createPopulate(employeesFromSheet))
         .sort(this.compare)
         .map(this.createFormatRowData(employeesFromSheet));
-    })
-  );
+    });
 }
 
 export default CommonProcessor;

@@ -1,4 +1,4 @@
-interface IGetAllActiveResponseItem {
+interface GetAllActiveResponseItemInterface {
   readonly id: number;
   general: {
     readonly username: string | null;
@@ -6,17 +6,17 @@ interface IGetAllActiveResponseItem {
     readonly familyName: string | null;
     readonly nativeFullName: string | null;
     readonly birthday: string | null;
-  }
+  };
   jobInfo: {
     readonly hiringDate: string | null;
     readonly managerId: string | null;
-  },
+  };
   bamboo: {
     readonly id: number;
     readonly firstName: string | null;
     readonly familyName: string | null;
     readonly gender: string | null;
-  },
+  };
   latestGrade: {
     readonly location: string | null;
     readonly position: string | null;
@@ -24,7 +24,7 @@ interface IGetAllActiveResponseItem {
     readonly level: number;
     readonly workProfile: string | null;
     readonly specialization: string | null;
-  },
+  };
   social: {
     readonly email: string | null;
     readonly phone: string | null;
@@ -33,8 +33,8 @@ interface IGetAllActiveResponseItem {
     readonly gitHubContact: string | null;
     readonly dockerCloudId: string | null;
     readonly skypeId: string | null;
-  },
-  readonly projects: string[]
+  };
+  readonly projects: string[];
 }
 
-interface IGetAllActiveResponse extends Array<IGetAllActiveResponseItem> { }
+type IGetAllActiveResponse = Array<GetAllActiveResponseItemInterface>;

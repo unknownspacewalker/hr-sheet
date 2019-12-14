@@ -1,6 +1,6 @@
 import { EViewPriority } from '../google/interfaces/EPriority';
 
-export default interface IEmployee {
+export default interface EmployeeInterface {
   readonly id: number;
   readonly manager: string | null;
   readonly username: string | null;
@@ -13,6 +13,6 @@ export default interface IEmployee {
   readonly specialization: string;
   readonly skills: {
     [id: string]: boolean;
-  }
+  };
   readonly hiringDate: Date;
 }

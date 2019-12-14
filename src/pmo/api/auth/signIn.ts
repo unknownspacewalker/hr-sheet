@@ -16,14 +16,14 @@ function signIn(): Promise<string> {
       path: '/j_spring_security_check',
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, res => {
       const chunks = [];
 
-      res.on('data', (chunk) => {
+      res.on('data', chunk => {
         chunks.push(chunk);
       });
 
@@ -31,11 +31,12 @@ function signIn(): Promise<string> {
         resolve(cookie.parse(res.headers['set-cookie'][0]).JSESSIONID);
       });
 
-      res.on('error', (error) => {
+      res.on('error', error => {
         reject(error);
       });
     });
 
+    // eslint-disable-next-line @typescript-eslint/camelcase
     req.write(qs.stringify({ j_username: LOGIN, j_password: PASSWORD }));
     req.end();
   });

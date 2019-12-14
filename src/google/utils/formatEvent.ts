@@ -1,8 +1,7 @@
 import { format } from 'date-fns';
-import IEvent from '../interfaces/IEvent';
+import EventInterface from '../interfaces/EventInterface';
 
-const formatEvent = (event: IEvent): string => `${format(event.date, 'dd.MM.yyyy')} (${
-  event.fullName
-})`;
+const formatEvent = (event: EventInterface): string =>
+  `${format(event.date, 'dd.MM.yyyy')} (${event.fullName})`;
 
 export default formatEvent;

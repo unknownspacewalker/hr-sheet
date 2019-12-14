@@ -1,10 +1,10 @@
 import ora from 'ora';
 
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import PMO from './pmo';
 import onboardingProcessorFactory from './google/onboardingProcessorFactory';
 import GoogleWrapper from './google/GoogleWrapper';
-import IEmployee from './interfaces/IEmployee';
+import EmployeeInterface from './interfaces/EmployeeInterface';
 import simpleProcessorFactory from './google/simpleProcessorFactory';
 import hrProcessorFactory from './google/hrProcessorFactory';
 import Skilltree from './skilltree';
@@ -25,28 +25,34 @@ const {
   HR_PAGE_NAME,
 } = process.env;
 
-(async () => {
+export const syncronizeSheet = async () => {
   try {
     const pmo = new PMO();
     // const google = new Google();
 
     // init google instance
     const onboardingProcessor = onboardingProcessorFactory(
-      new GoogleWrapper(SHEET_ID, Number(ONBOARDING_PAGE_ID), ONBOARDING_PAGE_NAME),
+      new GoogleWrapper(
+        SHEET_ID,
+        Number(ONBOARDING_PAGE_ID),
+        ONBOARDING_PAGE_NAME
+      )
     );
     const t4Processor = simpleProcessorFactory(
-      new GoogleWrapper(SHEET_ID, Number(T4_PAGE_ID), T4_PAGE_NAME),
+      new GoogleWrapper(SHEET_ID, Number(T4_PAGE_ID), T4_PAGE_NAME)
     );
     const hrOnboardingProcessor = simpleProcessorFactory(
-      new GoogleWrapper(SHEET_ID, Number(ONBOARDING_HR_PAGE_ID), ONBOARDING_HR_PAGE_NAME),
+      new GoogleWrapper(
+        SHEET_ID,
+        Number(ONBOARDING_HR_PAGE_ID),
+        ONBOARDING_HR_PAGE_NAME
+      )
     );
     const hrProcessor = hrProcessorFactory(
-      new GoogleWrapper(SHEET_ID, Number(HR_PAGE_ID), HR_PAGE_NAME),
+      new GoogleWrapper(SHEET_ID, Number(HR_PAGE_ID), HR_PAGE_NAME)
     );
 
-
-    const PMOAuthSpinner = ora('Authorization in PMO')
-      .start();
+    const PMOAuthSpinner = ora('Authorization in PMO').start();
     try {
       await pmo.auth();
       PMOAuthSpinner.succeed();
@@ -55,8 +61,7 @@ const {
       throw e;
     }
 
-    const PMOGetEmployeesSpinner = ora('Fetching PMO employee list')
-      .start();
+    const PMOGetEmployeesSpinner = ora('Fetching PMO employee list').start();
     try {
       await pmo.getActiveUIEmployees();
       PMOGetEmployeesSpinner.succeed();
@@ -65,17 +70,18 @@ const {
       throw e;
     }
 
-    const onboardingSheetSpinner = ora('Sync Onboarding page')
-      .start();
+    const onboardingSheetSpinner = ora('Sync Onboarding page').start();
     try {
       await onboardingProcessor.sync(
         pmo.employees
           .filter(
-            (employee: IEmployee) => (
-              (employee.specialization === 'UI' || employee.specialization === 'Full stack') && employee.track === 'T' && employee.level >= 2
-            ),
+            (employee: EmployeeInterface) =>
+              (employee.specialization === 'UI' ||
+                employee.specialization === 'Full stack') &&
+              employee.track === 'T' &&
+              employee.level >= 2
           )
-          .filter(pmo.filterTrial),
+          .filter(pmo.filterTrial)
       );
       onboardingSheetSpinner.succeed();
     } catch (e) {
@@ -83,15 +89,16 @@ const {
       throw e;
     }
 
-    const t4SheetSpinner = ora('Sync T4 On Duty page')
-      .start();
+    const t4SheetSpinner = ora('Sync T4 On Duty page').start();
     try {
       await t4Processor.sync(
         pmo.employees.filter(
-          (employee: IEmployee) => (
-            (employee.specialization === 'UI' || employee.specialization === 'Full stack') && employee.level >= 4 && employee.track === 'T'
-          ),
-        ),
+          (employee: EmployeeInterface) =>
+            (employee.specialization === 'UI' ||
+              employee.specialization === 'Full stack') &&
+            employee.level >= 4 &&
+            employee.track === 'T'
+        )
       );
       t4SheetSpinner.succeed();
     } catch (e) {
@@ -99,13 +106,12 @@ const {
       throw e;
     }
 
-    const hrOnboardingSheetSpinner = ora('Sync HR Onboarding page')
-      .start();
+    const hrOnboardingSheetSpinner = ora('Sync HR Onboarding page').start();
     try {
       await hrOnboardingProcessor.sync(
         pmo.employees.filter(
-          (employee: IEmployee) => employee.track === 'H',
-        ),
+          (employee: EmployeeInterface) => employee.track === 'H'
+        )
       );
       hrOnboardingSheetSpinner.succeed();
     } catch (e) {
@@ -113,34 +119,30 @@ const {
       throw e;
     }
 
-    const onboardedEmployees = pmo.employees.filter((employee: IEmployee) => (
-      onboardingProcessor.onboardedEmployees.includes(employee.id)
-    ));
+    const onboardedEmployees = pmo.employees.filter(
+      (employee: EmployeeInterface) =>
+        onboardingProcessor.onboardedEmployees.includes(employee.id)
+    );
     if (onboardedEmployees.length === 0) {
       return;
     }
     const PMOGetEmployeesProjectsSpinner = ora(
-      `Fetching employees' projects [0/${onboardedEmployees.length}]`,
-    )
-      .start();
+      `Fetching employees' projects [0/${onboardedEmployees.length}]`
+    ).start();
 
     let hrEmployees = [];
     try {
       let counter = 0;
       const incrementCounter = () => {
         counter += 1;
-        PMOGetEmployeesProjectsSpinner.text = (
-          `Fetching employees' projects [${counter}/${onboardedEmployees.length}]`
-        );
+        PMOGetEmployeesProjectsSpinner.text = `Fetching employees' projects [${counter}/${onboardedEmployees.length}]`;
       };
 
       hrEmployees = await pmo.populate(
-        pmo.employees.filter(
-          (employee: IEmployee) => (
-            onboardingProcessor.onboardedEmployees.includes(employee.id)
-          ),
+        pmo.employees.filter((employee: EmployeeInterface) =>
+          onboardingProcessor.onboardedEmployees.includes(employee.id)
         ),
-        incrementCounter,
+        incrementCounter
       );
       // populate with skills
       PMOGetEmployeesProjectsSpinner.succeed();
@@ -149,11 +151,7 @@ const {
       throw e;
     }
 
-
-    const skillsSpinner = ora(
-      'Populating with skills',
-    )
-      .start();
+    const skillsSpinner = ora('Populating with skills').start();
 
     try {
       const skillTree = new Skilltree();
@@ -178,4 +176,6 @@ const {
     console.log('error:', e.message);
     console.log('stack:', e.stack);
   }
-})();
+};
+
+export default syncronizeSheet;

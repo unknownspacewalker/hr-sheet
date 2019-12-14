@@ -1,5 +1,4 @@
 import { google } from 'googleapis';
-import { promises as fsPromises } from 'fs';
 
 function fromToken(token: string) {
   const jwtClient = new google.auth.JWT();
@@ -9,10 +8,4 @@ function fromToken(token: string) {
   ]);
 }
 
-async function fromFile(tokenPath: string) {
-  const token = await fsPromises.readFile(tokenPath);
-
-  return fromToken(token.toString());
-}
-
-export { fromToken, fromFile };
+export { fromToken };

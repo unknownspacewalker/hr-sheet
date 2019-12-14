@@ -6,44 +6,47 @@ dotenv.config();
 // const { HOST, LOGIN, PASSWORD } = process.env;
 
 export type RawSkilledEmployee = {
-  'user_id': string,
-  'full_name': string;
-  'job_title': string;
-  'work_profile_id': number,
-  'grade_id': string;
-  'location': string;
-  'availability_status': string;
-  'assignments': [
+  user_id: string;
+  full_name: string;
+  job_title: string;
+  work_profile_id: number;
+  grade_id: string;
+  location: string;
+  availability_status: string;
+  assignments: [
     {
-      'name': string;
+      name: string;
     }
-  ],
-  'skills': [
+  ];
+  skills: [
     {
-      'id': number,
-      'name': string;
-      'level': string;
-      'declared_level': string;
-    },
-  ]
+      id: number;
+      name: string;
+      level: string;
+      declared_level: string;
+    }
+  ];
 };
 
-function getSkilledEmployees(token: string, skillId: number): Promise<RawSkilledEmployee[]> {
+function getSkilledEmployees(
+  token: string,
+  skillId: number
+): Promise<RawSkilledEmployee[]> {
   return new Promise((resolve, reject) => {
     const options = {
-      'method': 'POST',
-      'hostname': 'skilltree.griddynamics.net',
-      'path': '/api/v2/searchEmployee',
-      'headers': {
+      method: 'POST',
+      hostname: 'skilltree.griddynamics.net',
+      path: '/api/v2/searchEmployee',
+      headers: {
         'content-type': 'application/json',
-        'authorization': `Bearer ${token}`,
+        authorization: `Bearer ${token}`,
       },
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, res => {
       const chunks: Uint8Array[] = [];
 
-      res.on('data', (chunk) => {
+      res.on('data', chunk => {
         chunks.push(chunk);
       });
 
@@ -52,16 +55,18 @@ function getSkilledEmployees(token: string, skillId: number): Promise<RawSkilled
         resolve(JSON.parse(body.toString()));
       });
 
-      res.on('error', (error) => {
+      res.on('error', error => {
         reject(error);
       });
     });
 
-    req.write(JSON.stringify({
-      employees: [],
-      skills: [{ id: `${skillId}` }],
-      statuses: ['DECLARED'],
-    }));
+    req.write(
+      JSON.stringify({
+        employees: [],
+        skills: [{ id: `${skillId}` }],
+        statuses: ['DECLARED'],
+      })
+    );
 
     req.end();
   });

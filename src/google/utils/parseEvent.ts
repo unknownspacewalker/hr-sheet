@@ -1,13 +1,11 @@
 import { setDate, setMonth, setYear } from 'date-fns';
-import IEvent from '../interfaces/IEvent';
+import EventInterface from '../interfaces/EventInterface';
 
-const parseEvent = (event: string): IEvent => {
+const parseEvent = (event: string): EventInterface => {
   const {
-    groups: {
-      year, month, day, name,
-    },
+    groups: { year, month, day, name },
   } = /^(?<day>\d{1,2}).(?<month>\d{1,2}).(?<year>\d{4}) \((?<name>\w+\s\w+)\)$/gm.exec(
-    event,
+    event
   );
 
   let parsedDate = new Date();

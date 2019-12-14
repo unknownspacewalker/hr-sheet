@@ -1,2 +1,2 @@
-interface IGetEmployeeProjectsResponseItem extends String { }
-interface IGetEmployeeProjectsResponse extends Array<IGetEmployeeProjectsResponseItem> { }
+type IGetEmployeeProjectsResponseItem = string;
+type IGetEmployeeProjectsResponse = Array<IGetEmployeeProjectsResponseItem>;

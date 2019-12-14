@@ -1,12 +1,15 @@
-import ISheetRowData from '../interfaces/ISheetRowData';
+import SheetRowDataInterface from '../interfaces/SheetRowDataInterface';
 
 const populateWithUserInput = (
-  value: ISheetRowData,
-  source: ISheetRowData,
-): ISheetRowData => ({
+  value: SheetRowDataInterface,
+  source: SheetRowDataInterface
+): SheetRowDataInterface => ({
   ...value,
   Availability: source.Availability,
   English: source.English,
+  React: source.React,
+  Angular: source.Angular,
+  NodeJS: source.NodeJS,
   Willingness: source.Willingness,
   PlannedInterviews: source.PlannedInterviews,
 });

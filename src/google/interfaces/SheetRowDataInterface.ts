@@ -1,7 +1,7 @@
 import { EPriority } from './EPriority';
 // import IEvent from './IEvent';
 
-export default interface ISheetRowData {
+export default interface SheetRowDataInterface {
   DM: string;
   Availability: string;
   DeveloperId: number;
