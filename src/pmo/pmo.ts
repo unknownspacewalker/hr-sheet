@@ -29,11 +29,11 @@ class PMO {
     this.UIEngineers = undefined;
   }
 
-  auth = async function() {
+  auth = async function(): Promise<void> {
     this.jsessionid = await signIn();
   };
 
-  getActiveUIEmployees = async function() {
+  getActiveUIEmployees = async function(): Promise<void> {
     const rawEmployees = await getAllActive(this.jsessionid);
 
     this.employees = rawEmployees.map(
@@ -58,21 +58,17 @@ class PMO {
     );
   };
 
-  filterTrial = (employee: EmployeeInterface) =>
+  filterTrial = (employee: EmployeeInterface): boolean =>
     !isAfter(employee.hiringDate, subMonths(new Date(), 3));
-
-  getAccountType = async function() {
-    console.log('get account types');
-  };
 
   populate = async function(
     employees: EmployeeInterface[],
     callback: () => void
-  ) {
+  ): Promise<EmployeeInterface[]> {
     return promiseAllWithBandWidth(
       employees.map((employee: EmployeeInterface): (() => Promise<
         EmployeeInterface
-      >) => async () => ({
+      >) => async (): Promise<EmployeeInterface> => ({
         ...employee,
         priority: getPriority(
           await getEmployeeProjects(

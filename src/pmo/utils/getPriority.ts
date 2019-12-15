@@ -1,10 +1,11 @@
 import { EViewPriority } from '../../google/interfaces/EPriority';
 import EmployeeInterface from '../../interfaces/EmployeeInterface';
 
-function isBenchAccount(accountName: string) {
+function isBenchAccount(accountName: string): boolean {
   return accountName === 'Corporate Delivery Bench';
 }
-function isInternalAccount(accountName: string) {
+
+function isInternalAccount(accountName: string): boolean {
   const internalAccounts = [
     'Tools',
     'TA Offshore',

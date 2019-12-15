@@ -25,7 +25,7 @@ const {
   HR_PAGE_NAME,
 } = process.env;
 
-export const syncronizeSheet = async () => {
+export const syncronizeSheet = async (): Promise<void> => {
   try {
     const pmo = new PMO();
     // const google = new Google();
@@ -133,7 +133,7 @@ export const syncronizeSheet = async () => {
     let hrEmployees = [];
     try {
       let counter = 0;
-      const incrementCounter = () => {
+      const incrementCounter = (): void => {
         counter += 1;
         PMOGetEmployeesProjectsSpinner.text = `Fetching employees' projects [${counter}/${onboardedEmployees.length}]`;
       };
@@ -173,9 +173,7 @@ export const syncronizeSheet = async () => {
       throw e;
     }
   } catch (e) {
-    console.log('error:', e.message);
+    console.error('error:', e.message);
     console.log('stack:', e.stack);
   }
 };
-
-export default syncronizeSheet;

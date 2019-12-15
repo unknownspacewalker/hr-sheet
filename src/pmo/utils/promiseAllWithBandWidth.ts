@@ -9,7 +9,7 @@ function promiseAllWithBandWidth<T>(
     const results: T[] = [];
     let canceled = false;
 
-    const launch = (callback: () => Promise<T>, index: number) => {
+    const launch = (callback: () => Promise<T>, index: number): void => {
       callback()
         .then(result => {
           if (canceled) {

@@ -25,11 +25,11 @@ class Skilltree {
     };
   }
 
-  signIn = async () => {
+  signIn = async (): Promise<void> => {
     this.token = await signIn();
   };
 
-  searchForSkilledEmployees = async () => {
+  searchForSkilledEmployees = async (): Promise<Acc> => {
     const rawReactSkilledEmployees = await getSkilledEmployees(
       this.token,
       this.skills.ReactJS
@@ -42,7 +42,8 @@ class Skilltree {
       this.token,
       this.skills.NodeJS
     );
-    const skilledEmployeesMap = [
+
+    return [
       ...rawReactSkilledEmployees,
       ...rawAngularSkilledEmployees,
       ...rawNodejsSkilledEmployees,
@@ -58,7 +59,6 @@ class Skilltree {
       );
       return acc;
     }, {});
-    return skilledEmployeesMap;
   };
 
   populate = async (
