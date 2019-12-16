@@ -175,5 +175,6 @@ export const syncronizeSheet = async (): Promise<void> => {
   } catch (e) {
     console.error('error:', e.message);
     console.log('stack:', e.stack);
+    throw e;
   }
 };
